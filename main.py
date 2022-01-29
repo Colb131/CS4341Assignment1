@@ -1,6 +1,17 @@
 import pathPlanner
 import generateRandomBoard
-import generateRandomBoard as Board_Gen
+import csv
+import numpy as np
+
+matrix = []
+
+def reader():
+    with open('input.txt', 'r') as f:
+        reader = csv.reader(f, dialect='excel', delimiter='\t')
+    x = list(reader)
+    result = np.array(x)
+
+    print(result)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
