@@ -107,7 +107,9 @@ def a_star(mapdata, start, goal):
     heading = {}
     came_from[start] = None
     cost_so_far[start] = 0
+    heading[start] = 1 # 1 is up, 2 is to the right, 3 is bottom, 4 is to the left
     totalCount = 0
+    nextHeading = 0
 
     came_from[goal] = None
 
@@ -137,15 +139,23 @@ def a_star(mapdata, start, goal):
             break
 
         #Add viable children to frontier
-        print("checking neighbors")
+        print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-            print("%s Cost: %d" %(next, mapdata[next[1]][next[0]]))
-            new_cost = 0 # cost_so_far[current] + euclidean_distance(current[0], current[1], next[0], next[1])
             cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
+
+            if next[1]-current[1] != 0:
+                nextHeading = next[1] - current[1] + 2
+            if next[0]-current[0] != 0:
+                nextHeading = (((next[0] - current[0])+3)%3)*2
+            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            turn_cost = (4+nextHeading-heading[current])%4
+
+            new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
+
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 totalCount+=1
                 cost_so_far[next] = new_cost
-                priority = new_cost + cell_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
+                priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
 
                 # update frontier message
@@ -157,6 +167,7 @@ def a_star(mapdata, start, goal):
 
                 #add parent to came_from table
                 came_from[next] = current
+                heading[next] = nextHeading
 
     # Return the path found
     path = []
@@ -192,10 +203,10 @@ def plan_path(mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata==-2)
+    start_y,start_x = np.where(mapdata=="S")
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata==-1)
+    goal_y, goal_x = np.where(mapdata=="G")
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal)
