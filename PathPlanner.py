@@ -293,7 +293,7 @@ class PathPlanner:
     def a_star(self, mapdata, start, goal):
         """The start and goal are a tuple in grid format, mappdata = Cspacedata"""
         ### REQUIRED CREDIT
-        rospy.loginfo("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
+        print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
         frontier = PriorityQueue()
         frontier.put(start, 0)
         came_from = {}
@@ -303,41 +303,27 @@ class PathPlanner:
 
         came_from[goal] = None
 
-        # frontier message prep
+        # Create the frontiers
         frontierStuff = frontier.get_queue()
         frontierCells = []
         for priorityTuple in frontierStuff:
             gridTuple = priorityTuple[1]
             # print(gridTuple)
             frontierCells.append(PathPlanner.grid_to_world(mapdata, gridTuple[0], gridTuple[1]))
-        frontierMsg = GridCells()
-        frontierMsg.cell_width = mapdata.info.resolution
-        frontierMsg.cell_height = mapdata.info.resolution
-        frontierMsg.header.frame_id = "map"
-        frontierMsg.header.stamp = rospy.Time.now()
-        frontierMsg.cells = frontierCells
-        self.pubF.publish(frontierMsg)
 
-        #expanded cells message pre
+
+        #expanded cells to show pathed frontiers
         expandedCells = []
-        expandedMsg = GridCells()
-        expandedMsg.cell_width = mapdata.info.resolution
-        expandedMsg.cell_height = mapdata.info.resolution
-        expandedMsg.header.frame_id = "map"
-        expandedMsg.header.stamp = rospy.Time.now()
-        expandedMsg.cells = expandedCells
+
 
         #Go through graph until frontier is empty
         while not frontier.empty():
             current = frontier.get()
 
-            # update and publish expanded cells message
+            # update the frontiers visited just to let us see visually if we want
             expandedCells.append(PathPlanner.grid_to_world(mapdata, current[0], current[1]))
-            expandedMsg.header.stamp = rospy.Time.now()
-            expandedMsg.cells = expandedCells
-            self.pubE.publish(expandedMsg)
-            rospy.sleep(0.1)
 
+            # If we have reached the goal, leave
             if current == goal:
                 break
 
@@ -349,8 +335,7 @@ class PathPlanner:
                     priority = new_cost + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                     frontier.put(next, priority)
 
-                    # update and publish frontier message
-                    frontierMsg.header.stamp = rospy.Time.now()
+                    # update frontier message
                     frontierStuff = frontier.get_queue()
                     frontierCells = []
                     for priorityTuple in frontierStuff:
