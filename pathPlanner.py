@@ -55,11 +55,19 @@ def neighbors_of_4(mapdata, x, y):
     ### REQUIRED CREDIT
     neighbors = []
 
-    addx = [1, -1, 0, 0]
-    addy = [0, 0, 1, -1]
+    addy = [1, -1, 0, 0]
+    addx = [0, 0, 1, -1]
     for i in range(len(addx)):
-        if generateRandomBoard.arrayCols != x + addx[i] and generateRandomBoard.arrayRows != y + addy[i] and -1 != x + addx[i] and -1 != y + addy[i]:
+        cols = generateRandomBoard.arrayCols
+        rows = generateRandomBoard.arrayRows
+
+
+        if cols - 1 != y + addx[i] and \
+                rows - 1 != x + addy[i] and \
+                -1 != x + addx[i] and \
+                -1 != y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
+
     return neighbors
 
 
@@ -96,6 +104,7 @@ def a_star(mapdata, start, goal):
     frontier.put(start, 0)
     came_from = {}
     cost_so_far = {}
+    heading = {}
     came_from[start] = None
     cost_so_far[start] = 0
     totalCount = 0
@@ -130,9 +139,9 @@ def a_star(mapdata, start, goal):
         #Add viable children to frontier
         print("checking neighbors")
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-            print("%s Cost: %d" %(next, mapdata[next[0]][next[1]]))
+            print("%s Cost: %d" %(next, mapdata[next[1]][next[0]]))
             new_cost = 0 # cost_so_far[current] + euclidean_distance(current[0], current[1], next[0], next[1])
-            cell_cost = mapdata[next[0]][next[1]] # Cost of the next cell
+            cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 totalCount+=1
                 cost_so_far[next] = new_cost
@@ -166,9 +175,10 @@ def a_star(mapdata, start, goal):
     #reverse path to make it so the first element is the start
     path = path[::-1]
     print("A* completed")
-    totalScore = 100
-    for point in path[1:-2]:
-        totalScore -= mapdata[point[0],point[1]]
+    totalScore = 97
+    for point in path:
+        print(mapdata[point[1],point[0]])
+        totalScore -= mapdata[point[1],point[0]]
     print(totalScore)
     return path
 

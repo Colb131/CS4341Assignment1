@@ -6,6 +6,11 @@ import generateRandomBoard as Board_Gen
 if __name__ == '__main__':
     board = generateRandomBoard.getBoard()
     print(board)
+    gameboard = [[-1,2,3,4],
+                       [5,6,7,8],
+                       [1,2,3,4],
+                       [5,6,7,-2]]
+    #print(gameboard)
     path = pathPlanner.plan_path(board)
     print(path)
 
