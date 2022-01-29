@@ -173,7 +173,7 @@ class PathPlanner:
                 cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
-                    priority = new_cost + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
+                    priority = new_cost + cell_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                     frontier.put(next, priority)
 
                     # update frontier message
@@ -213,8 +213,10 @@ class PathPlanner:
         ## Request the map
         ## In case of error, return an empty path
         ## Execute A*
-        start = np.where(mapdata == 'S')
-        goal = np.where(mapdata == 'G')
+        start = []
+        start[0],start[1] = np.where(mapdata == 'S')
+        goal = []
+        goal[0],goal[1] = np.where(mapdata == 'G')
         path  = self.a_star(mapdata, start, goal)
         ## Return a Path message
         return path
