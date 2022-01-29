@@ -97,9 +97,11 @@ class PathPlanner:
         addx = [1, -1, 0, 0]
         addy = [0, 0, 1, -1]
         for i in range(len(addx)):
-            if PathPlanner.is_cell_walkable(mapdata, x + addx[i], y + addy[i]):
+            try:
                 neighbors.append((x + addx[i], y + addy[i]))
-
+                break
+            except Exception as err:
+                print("Not a valid index!")
         return neighbors
 
 
@@ -166,7 +168,7 @@ class PathPlanner:
                 break
 
             #Add viable children to frontier
-            for next in PathPlanner.neighbors_of_8(mapdata, current[0], current[1]):
+            for next in PathPlanner.neighbors_of_4(mapdata, current[0], current[1]):
                 new_cost = 0 # cost_so_far[current] + PathPlanner.euclidean_distance(current[0], current[1], next[0], next[1])
                 cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
