@@ -71,7 +71,7 @@ def is_cell_walkable(mapdata, x, y):
 
 
 @staticmethod
-def neighbors_of_4(mapdata, x, y):
+def neighbors_of_4(x, y):
     """
     Returns the walkable 4-neighbors cells of (x,y) in the occupancy grid.
     :param mapdata [OccupancyGrid] The map information.
@@ -86,40 +86,37 @@ def neighbors_of_4(mapdata, x, y):
     addx = [1, -1, 0, 0]
     addy = [0, 0, 1, -1]
     for i in range(len(addx)):
-        try:
-            neighbors.append((x + addx[i], y + addy[i]))
-            break
-        except Exception as err:
-            print("Not a valid index!")
+        ##TODO : NEED A WAY TO TELL IF INDEX OUT OF BOUNDS
+        neighbors.append((x + addx[i], y + addy[i]))
     return neighbors
 
 
 
-@staticmethod
-def neighbors_of_8(mapdata, x, y):
-    """
-    Returns the walkable 8-neighbors cells of (x,y) in the occupancy grid.
-    :param mapdata [OccupancyGrid] The map information.
-    :param x       [int]           The X coordinate in the grid.
-    :param y       [int]           The Y coordinate in the grid.
-    :return        [[(int,int)]]   A list of walkable 8-neighbors.
-    """
+# @staticmethod
+# def neighbors_of_8(mapdata, x, y):
+#     """
+#     Returns the walkable 8-neighbors cells of (x,y) in the occupancy grid.
+#     :param mapdata [OccupancyGrid] The map information.
+#     :param x       [int]           The X coordinate in the grid.
+#     :param y       [int]           The Y coordinate in the grid.
+#     :return        [[(int,int)]]   A list of walkable 8-neighbors.
+#     """
+#
+#     ### REQUIRED CREDIT
+#     neighbors = []
+#
+#     addx = [1, -1, 0, 0, 1, 1, -1, -1]
+#     addy = [0, 0, 1, -1, 1, -1, -1, 1]
+#     for i in range(len(addx)):
+#         try:
+#            neighbors.append((x + addx[i], y + addy[i]))
+#            break
+#         except Exception as err:
+#             print("Not a valid index!")
+#     return neighbors
 
-    ### REQUIRED CREDIT
-    neighbors = []
 
-    addx = [1, -1, 0, 0, 1, 1, -1, -1]
-    addy = [0, 0, 1, -1, 1, -1, -1, 1]
-    for i in range(len(addx)):
-        try:
-           neighbors.append((x + addx[i], y + addy[i]))
-           break
-        except Exception as err:
-            print("Not a valid index!")
-    return neighbors
-
-
-def a_star(self, mapdata, start, goal):
+def a_star(mapdata, start, goal):
     """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
     ### REQUIRED CREDIT
     print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
@@ -157,7 +154,7 @@ def a_star(self, mapdata, start, goal):
             break
 
         #Add viable children to frontier
-        for next in neighbors_of_4(mapdata, current[0], current[1]):
+        for next in neighbors_of_4(current[0], current[1]):
             new_cost = 0 # cost_so_far[current] + PathPlanner.euclidean_distance(current[0], current[1], next[0], next[1])
             cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
             if next not in cost_so_far or new_cost < cost_so_far[next]:
@@ -193,7 +190,7 @@ def a_star(self, mapdata, start, goal):
     return path
 
 
-def plan_path(self, mapdata):
+def plan_path(mapdata):
     """
     Plans a path between the start and goal locations in the requested.
     Internally uses A* to plan the optimal path.
@@ -202,10 +199,8 @@ def plan_path(self, mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start = []
-    start[0],start[1] = np.where(mapdata == -2)
-    goal = []
-    goal[0],goal[1] = np.where(mapdata == -1)
-    path  = self.a_star(mapdata, start, goal)
+    start = np.where(mapdata == -2)
+    goal = np.where(mapdata == -1)
+    path  = a_star(mapdata, start, goal)
     ## Return a Path message
     return path

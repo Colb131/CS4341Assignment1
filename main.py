@@ -6,8 +6,7 @@ import generateRandomBoard as Board_Gen
 if __name__ == '__main__':
     board = generateRandomBoard.getBoard()
     print(board)
-    pather = pathPlanner()
-    path = pather.plan_path(board)
+    path = pathPlanner.plan_path(board)
     print('Hi')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
