@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 import math
+
+import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
-@staticmethod
 def grid_to_index(mapdata, x, y):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.
@@ -16,7 +17,6 @@ def grid_to_index(mapdata, x, y):
     ### REQUIRED CREDIT
     return y * mapdata.info.width + x
 
-@staticmethod
 def index_to_grid(mapdata, i):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.
@@ -30,7 +30,6 @@ def index_to_grid(mapdata, i):
     return (x,y)
 
 
-@staticmethod
 def euclidean_distance(x1, y1, x2, y2):
     """
     Calculates the Euclidean distance between two points.
@@ -44,34 +43,7 @@ def euclidean_distance(x1, y1, x2, y2):
     ### REQUIRED CREDIT
     return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
-@staticmethod
-def is_cell_walkable(mapdata, x, y):
-    """
-    A cell is walkable if all of these conditions are true:
-    1. It is within the boundaries of the grid;
-    2. It is free (not unknown, not occupied by an obstacle)
-    :param mapdata [OccupancyGrid] The map information.
-    :param x       [int]           The X coordinate in the grid.
-    :param y       [int]           The Y coordinate in the grid.
-    :return        [boolean]       True if the cell is walkable, False otherwise
-    """
-
-    ### REQUIRED CREDIT
-    width = mapdata.info.width
-    height = mapdata.info.height
-    #print(x,y,width,height)
-    #print(len(mapdata.data))
-    #print(PathPlanner.grid_to_index(mapdata, x, y))
-    if x >= width or x < 0 or y >= height or y < 0:
-        return False
-    if mapdata.data[PathPlanner.grid_to_index(mapdata, x, y)] > 50:
-        return False
-    return True
-
-
-
-@staticmethod
-def neighbors_of_4(x, y):
+def neighbors_of_4(mapdata, x, y):
     """
     Returns the walkable 4-neighbors cells of (x,y) in the occupancy grid.
     :param mapdata [OccupancyGrid] The map information.
@@ -86,8 +58,8 @@ def neighbors_of_4(x, y):
     addx = [1, -1, 0, 0]
     addy = [0, 0, 1, -1]
     for i in range(len(addx)):
-        ##TODO : NEED A WAY TO TELL IF INDEX OUT OF BOUNDS
-        neighbors.append((x + addx[i], y + addy[i]))
+        if generateRandomBoard.arrayCols != x + addx[i] and generateRandomBoard.arrayRows != y + addy[i] and -1 != x + addx[i] and -1 != y + addy[i]:
+            neighbors.append((x + addx[i], y + addy[i]))
     return neighbors
 
 
@@ -126,6 +98,7 @@ def a_star(mapdata, start, goal):
     cost_so_far = {}
     came_from[start] = None
     cost_so_far[start] = 0
+    totalCount = 0
 
     came_from[goal] = None
 
@@ -134,8 +107,8 @@ def a_star(mapdata, start, goal):
     frontierCells = []
     for priorityTuple in frontierStuff:
         gridTuple = priorityTuple[1]
+        frontierCells.append([gridTuple[0], gridTuple[1]])
         # print(gridTuple)
-        frontierCells.append(gridTuple[0], gridTuple[1])
 
 
     #expanded cells to show pathed frontiers
@@ -145,19 +118,23 @@ def a_star(mapdata, start, goal):
     #Go through graph until frontier is empty
     while not frontier.empty():
         current = frontier.get()
-
+        # print(current)
         # update the frontiers visited just to let us see visually if we want
-        expandedCells.append(current[0], current[1])
+        expandedCells.append([current[0], current[1]])
 
         # If we have reached the goal, leave
         if current == goal:
+            print("Goal achieved")
             break
 
         #Add viable children to frontier
-        for next in neighbors_of_4(current[0], current[1]):
-            new_cost = 0 # cost_so_far[current] + PathPlanner.euclidean_distance(current[0], current[1], next[0], next[1])
-            cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
+        print("checking neighbors")
+        for next in neighbors_of_4(mapdata,current[0], current[1]):
+            print("%s Cost: %d" %(next, mapdata[next[0]][next[1]]))
+            new_cost = 0 # cost_so_far[current] + euclidean_distance(current[0], current[1], next[0], next[1])
+            cell_cost = mapdata[next[0]][next[1]] # Cost of the next cell
             if next not in cost_so_far or new_cost < cost_so_far[next]:
+                totalCount+=1
                 cost_so_far[next] = new_cost
                 priority = new_cost + cell_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
@@ -167,7 +144,7 @@ def a_star(mapdata, start, goal):
                 frontierCells = []
                 for priorityTuple in frontierStuff:
                     gridTuple = priorityTuple[1]
-                    frontierCells.append(gridTuple[0], gridTuple[1])
+                    frontierCells.append([gridTuple[0], gridTuple[1]])
 
                 #add parent to came_from table
                 came_from[next] = current
@@ -175,6 +152,9 @@ def a_star(mapdata, start, goal):
     # Return the path found
     path = []
     current = goal
+
+    print("Total Cost %d" % totalCount)
+
     if came_from[goal] != None:
         while came_from[current] != None:
             path.append(current)
@@ -186,7 +166,10 @@ def a_star(mapdata, start, goal):
     #reverse path to make it so the first element is the start
     path = path[::-1]
     print("A* completed")
-    #print(path)
+    totalScore = 100
+    for point in path[1:-2]:
+        totalScore -= mapdata[point[0],point[1]]
+    print(totalScore)
     return path
 
 
@@ -199,8 +182,12 @@ def plan_path(mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start = np.where(mapdata == -2)
-    goal = np.where(mapdata == -1)
-    path  = a_star(mapdata, start, goal)
+    start_y,start_x = np.where(mapdata==-2)
+    # start = (1,2)
+    start = (int(start_x),int(start_y))
+    goal_y, goal_x = np.where(mapdata==-1)
+    # goal = (3,4)
+    goal = (int(goal_x),int(goal_y))
+    path = a_star(mapdata, start, goal)
     ## Return a Path message
     return path

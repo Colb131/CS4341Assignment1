@@ -7,6 +7,6 @@ if __name__ == '__main__':
     board = generateRandomBoard.getBoard()
     print(board)
     path = pathPlanner.plan_path(board)
-    print('Hi')
+    print(path)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
