@@ -214,9 +214,9 @@ class PathPlanner:
         ## In case of error, return an empty path
         ## Execute A*
         start = []
-        start[0],start[1] = np.where(mapdata == 'S')
+        start[0],start[1] = np.where(mapdata == -2)
         goal = []
-        goal[0],goal[1] = np.where(mapdata == 'G')
+        goal[0],goal[1] = np.where(mapdata == -1)
         path  = self.a_star(mapdata, start, goal)
         ## Return a Path message
         return path
