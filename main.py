@@ -1,4 +1,4 @@
-import PathPlanner as Path_Planner
+import pathPlanner
 import generateRandomBoard
 import generateRandomBoard as Board_Gen
 
@@ -6,8 +6,8 @@ import generateRandomBoard as Board_Gen
 if __name__ == '__main__':
     board = generateRandomBoard.getBoard()
     print(board)
-    # pPlaner = Path_Planner()
-    # path = pPlaner.plan_path(board)
+    pather = pathPlanner()
+    path = pather.plan_path(board)
     print('Hi')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
