@@ -11,8 +11,8 @@ def placeS(arrayCols, arrayRows, board):
 
 
 def getBoard():
-    arrayCols = 4
-    arrayRows = 3
+    arrayCols = 12
+    arrayRows = 12
 
     board = np.random.randint(10, size=(arrayRows, arrayCols))
 
@@ -23,4 +23,5 @@ def getBoard():
 
     placeS(arrayCols, arrayRows, board)
 
-    print(board)
+    return board
+
