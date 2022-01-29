@@ -55,89 +55,6 @@ class PathPlanner:
         ### REQUIRED CREDIT
         return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
-
-
-    @staticmethod
-    def grid_to_world(mapdata, x, y):
-        """
-        Transforms a cell coordinate in the occupancy grid into a world coordinate.
-        :param mapdata [OccupancyGrid] The map information.
-        :param x       [int]           The cell X coordinate.
-        :param y       [int]           The cell Y coordinate.
-        :return        [Point]         The position in the world.
-        """
-
-        ### REQUIRED CREDIT
-        resolution = mapdata.info.resolution
-        origin_x = mapdata.info.origin.position.x
-        origin_y = mapdata.info.origin.position.y
-        world_x = (x+0.5)*resolution + origin_x
-        world_y = (y+0.5)*resolution + origin_y
-        wc = Point()
-        wc.x = world_x
-        wc.y = world_y
-        return wc
-
-
-
-    @staticmethod
-    def world_to_grid(mapdata, wp):
-        """
-        Transforms a world coordinate into a cell coordinate in the occupancy grid.
-        :param mapdata [OccupancyGrid] The map information.
-        :param wp      [Point]         The world coordinate.
-        :return        [(int,int)]     The cell position as a tuple.
-        """
-
-        ### REQUIRED CREDIT
-        resolution = mapdata.info.resolution
-        origin_x = mapdata.info.origin.position.x
-        origin_y = mapdata.info.origin.position.y
-        grid_x = int((wp.x - origin_x)/resolution)
-        grid_y = int((wp.y - origin_y)/resolution)
-        return (grid_x, grid_y)
-
-
-
-    @staticmethod
-    def path_to_poses(mapdata, path):
-        """
-        Converts the given path into a list of PoseStamped.
-        :param mapdata [OccupancyGrid] The map information.
-        :param  path   [[(int,int)]]   The path as a list of tuples (cell coordinates).
-        :return        [[PoseStamped]] The path as a list of PoseStamped (world coordinates).
-        """
-
-        ### REQUIRED CREDIT
-        poseS = []
-        counter = 0
-        for cell in path:
-            pose = PoseStamped()
-            pose.header.frame_id = "map"
-            pose.header.stamp = rospy.Time.now()
-            point = PathPlanner.grid_to_world(mapdata, cell[0], cell[1])
-            pose.pose.position = point
-
-            Rot = 0
-            if cell != path[-1]:
-                nextCell = path[counter + 1]
-                deltaX = nextCell[0] - cell[0]
-                deltaY = nextCell[1] - cell[1]
-                Rot = math.atan2(deltaY, deltaX)
-
-            quaterninon = quaternion_from_euler(0, 0, Rot)
-            pose.pose.orientation.x = quaterninon[0]
-            pose.pose.orientation.y = quaterninon[1]
-            pose.pose.orientation.z = quaterninon[2]
-            pose.pose.orientation.w = quaterninon[3]
-
-            counter += 1
-            poseS.append(pose)
-        # print(poseS)
-        return poseS
-
-
-
     @staticmethod
     def is_cell_walkable(mapdata, x, y):
         """
@@ -180,9 +97,11 @@ class PathPlanner:
         addx = [1, -1, 0, 0]
         addy = [0, 0, 1, -1]
         for i in range(len(addx)):
-            if PathPlanner.is_cell_walkable(mapdata, x + addx[i], y + addy[i]):
+            try:
                 neighbors.append((x + addx[i], y + addy[i]))
-
+                break
+            except Exception as err:
+                print("Not a valid index!")
         return neighbors
 
 
@@ -249,7 +168,7 @@ class PathPlanner:
                 break
 
             #Add viable children to frontier
-            for next in PathPlanner.neighbors_of_8(mapdata, current[0], current[1]):
+            for next in PathPlanner.neighbors_of_4(mapdata, current[0], current[1]):
                 new_cost = 0 # cost_so_far[current] + PathPlanner.euclidean_distance(current[0], current[1], next[0], next[1])
                 cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
