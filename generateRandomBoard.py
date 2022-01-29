@@ -2,8 +2,8 @@
 
 import numpy as np
 from numpy import *
-arrayCols = 20
-arrayRows = 20
+arrayCols = 3
+arrayRows = 5
 
 def placeS(arrayCols, arrayRows, board):
     startCol = np.random.randint(0, arrayCols - 1)
