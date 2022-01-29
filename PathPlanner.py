@@ -2,6 +2,7 @@
 
 import math
 from priority_queue import PriorityQueue
+import numpy as np
 
 
 class PathPlanner:
@@ -250,6 +251,7 @@ class PathPlanner:
             #Add viable children to frontier
             for next in PathPlanner.neighbors_of_8(mapdata, current[0], current[1]):
                 new_cost = 0 # cost_so_far[current] + PathPlanner.euclidean_distance(current[0], current[1], next[0], next[1])
+                cell_cost = mapdata[current[0]][current[1]] # Cost of the next cell
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
                     priority = new_cost + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
@@ -283,7 +285,7 @@ class PathPlanner:
         return path
 
 
-    def plan_path(self, msg):
+    def plan_path(self, mapdata):
         """
         Plans a path between the start and goal locations in the requested.
         Internally uses A* to plan the optimal path.
@@ -291,33 +293,12 @@ class PathPlanner:
         """
         ## Request the map
         ## In case of error, return an empty path
-        mapdata = PathPlanner.request_map()
-        if mapdata is None:
-            return Path()
-        wheelbase = 0.16 #Wheelbase is 16cm
-        ## Calculate the C-space and publish it
-        cspacedata = self.calc_cspace(mapdata, int(math.ceil(wheelbase / 2 / mapdata.info.resolution))) #Inputs occupancy grid and necessary padding which is wheelbase / 2 / resolution
-        ## Calculate frontier
-
         ## Execute A*
-        start = PathPlanner.world_to_grid(mapdata, msg.start.pose.position)
-        goal  = PathPlanner.world_to_grid(mapdata, msg.goal.pose.position)
-        path  = self.a_star(cspacedata, start, goal)
-        ## Optimize waypoints
-        waypoints = PathPlanner.optimize_path(path)
-        self.pubP.publish(self.path_to_message(mapdata, waypoints))
+        start = np.where(mapdata == 'S')
+        goal = np.where(mapdata == 'G')
+        path  = self.a_star(mapdata, start, goal)
         ## Return a Path message
-        return self.path_to_message(mapdata, waypoints)
-
-
-
-    def run(self):
-        """
-        Runs the node until Ctrl-C is pressed.
-        """
-        rospy.loginfo("STARTED PATH PLANNER")
-        rospy.loginfo("WAITING FOR GETPLAN SRV")
-        rospy.spin()
+        return path
 
 
 
