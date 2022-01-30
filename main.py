@@ -16,9 +16,11 @@ def reader():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     board = generateRandomBoard.getBoard()
-    #print(board)
-    #print(gameboard)
-    path = pathPlanner.plan_path(board)
+
+    #TODO: Add a command line for this, 1-6
+    heuristicOption = 1
+
+    path = pathPlanner.plan_path(board, heuristicOption)
     print(path)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

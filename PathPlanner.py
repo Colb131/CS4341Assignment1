@@ -133,7 +133,7 @@ def cleanup(path):
     return finalPath
 
 
-def a_star(mapdata, start, goal):
+def a_star(mapdata, start, goal, heuristicOption):
     """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
     ### REQUIRED CREDIT
     print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
@@ -186,8 +186,8 @@ def a_star(mapdata, start, goal):
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
-
-            new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
+            new_cost = cell_cost + cost_so_far[current]
+        #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 numNodes+=1
@@ -218,6 +218,8 @@ def a_star(mapdata, start, goal):
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
+
+            #TODO: Add switch case
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
@@ -263,7 +265,7 @@ def a_star(mapdata, start, goal):
     return path
 
 
-def plan_path(mapdata):
+def plan_path(mapdata, heuristicOption):
     """
     Plans a path between the start and goal locations in the requested.
     Internally uses A* to plan the optimal path.
@@ -273,12 +275,12 @@ def plan_path(mapdata):
     ## In case of error, return an empty path
     ## Execute A*
     start_y,start_x = np.where(mapdata==-2)
-    # start = (1,2)
+
     start = (int(start_x),int(start_y))
     goal_y, goal_x = np.where(mapdata==-1)
-    # goal = (3,4)
+
     goal = (int(goal_x),int(goal_y))
-    path = a_star(mapdata, start, goal)
+    path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path)
     ## Return a Path message
     return finalPath
