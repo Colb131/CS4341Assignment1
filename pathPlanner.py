@@ -145,7 +145,7 @@ def a_star(mapdata, start, goal):
     came_from[start] = None
     cost_so_far[start] = 0
     heading[start] = 1 # 1 is up, 2 is to the right, 3 is bottom, 4 is to the left
-    totalCount = 0
+    numNodes = 0
     nextHeading = 0
 
     came_from[goal] = None
@@ -190,7 +190,7 @@ def a_star(mapdata, start, goal):
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
-                totalCount+=1
+                numNodes+=1
                 cost_so_far[next] = new_cost
                 priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
@@ -221,7 +221,7 @@ def a_star(mapdata, start, goal):
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
-                totalCount+=1
+                numNodes+=1
                 cost_so_far[next] = new_cost
                 priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
@@ -242,7 +242,7 @@ def a_star(mapdata, start, goal):
     path = []
     current = goal
 
-    print("Total Cost %d" % totalCount)
+    print("Total Node Cost %d" % numNodes)
 
     if came_from[goal] != None:
         while came_from[current] != None:
