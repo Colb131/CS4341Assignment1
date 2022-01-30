@@ -184,14 +184,14 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             #TODO: Heuristics go here:::
             verticleDistance = abs(goal[1]-next[1])
             horizontalDistance = abs(goal[0]-next[0])
 
-            print(horizontalDistance, verticleDistance)
+            #print(horizontalDistance, verticleDistance)
             if heuristicOption == 1: # No heuristic
                 new_cost = cell_cost + cost_so_far[current]
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
@@ -201,9 +201,9 @@ def a_star(mapdata, start, goal, heuristicOption):
             elif heuristicOption == 4: # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + math.sqrt(horizontalDistance * horizontalDistance + verticleDistance * verticleDistance)
+                new_cost = cell_cost + cost_so_far[current] + math.sqrt((horizontalDistance * horizontalDistance) + (verticleDistance * verticleDistance))
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + (3 * math.sqrt(horizontalDistance * horizontalDistance + verticleDistance * verticleDistance))
+                new_cost = cell_cost + cost_so_far[current] + (3 * math.sqrt((horizontalDistance * horizontalDistance) + (verticleDistance * verticleDistance)))
             else:
                 #If no valid heuristic is applied, simply revert to #1
                 new_cost = cell_cost + cost_so_far[current]
@@ -244,7 +244,7 @@ def a_star(mapdata, start, goal, heuristicOption):
             verticleDistance = abs(goal[1] - next[1])
             horizontalDistance = abs(goal[0] - next[0])
 
-            print(horizontalDistance, verticleDistance)
+            #print(horizontalDistance, verticleDistance)
             if heuristicOption == 1:  # No heuristic
                 new_cost = cell_cost + cost_so_far[current]
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
