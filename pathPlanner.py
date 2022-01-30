@@ -275,10 +275,10 @@ def plan_path(mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata=="S")
+    start_y,start_x = np.where(mapdata==-2)
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata=="G")
+    goal_y, goal_x = np.where(mapdata==-1)
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal)

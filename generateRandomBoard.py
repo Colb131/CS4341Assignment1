@@ -25,8 +25,11 @@ def getBoard():
 
     placeS(arrayCols, arrayRows, board)
 
-    board = np.where(board == -1, 'G', board)
-    board = np.where(board == -2, 'S', board)
+    nparr=np.array(board)
+    nparr = np.where(board == -1, 'G', board)
+    nparr = np.where(board == -2, 'S', nparr)
+
+    print(nparr)
 
     return board
 
