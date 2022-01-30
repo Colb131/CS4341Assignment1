@@ -121,6 +121,17 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 #             print("Not a valid index!")
 #     return neighbors
 
+def cleanup(path):
+    finalPath = []
+    for i in range(0,len(path)-1):
+        finalPath.append(path[i])
+        curr_pos = path[i]
+        next_pos = path[i+1]
+        if abs(next_pos[0]-curr_pos[0]) >= 2:
+            holderpos = (next_pos[0],next_pos[1])
+            finalPath.append(holderpos)
+    return finalPath
+
 
 def a_star(mapdata, start, goal):
     """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
@@ -223,7 +234,7 @@ def a_star(mapdata, start, goal):
                     frontierCells.append([gridTuple[0], gridTuple[1]])
 
                 #add parent to came_from table
-                came_from[next] = current
+                came_from[next] = current # This is currently skipping over one of the indexes
                 heading[next] = nextHeading
 
 
@@ -261,12 +272,13 @@ def plan_path(mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata==-1)
+    start_y,start_x = np.where(mapdata=="S")
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata==-2)
+    goal_y, goal_x = np.where(mapdata=="G")
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal)
+    finalPath = cleanup(path)
     ## Return a Path message
-    return path
+    return finalPath
