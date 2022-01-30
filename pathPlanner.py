@@ -121,6 +121,17 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 #             print("Not a valid index!")
 #     return neighbors
 
+def cleanup(path):
+    finalPath = []
+    for i in range(0,len(path)-1):
+        finalPath.append(path[i])
+        curr_pos = path[i]
+        next_pos = path[i+1]
+        if abs(next_pos[0]-curr_pos[0]) >= 2:
+            holderpos = (next_pos[0],next_pos[1])
+            finalPath.append(holderpos)
+    return finalPath
+
 
 def a_star(mapdata, start, goal):
     """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
@@ -134,7 +145,7 @@ def a_star(mapdata, start, goal):
     came_from[start] = None
     cost_so_far[start] = 0
     heading[start] = 1 # 1 is up, 2 is to the right, 3 is bottom, 4 is to the left
-    totalCount = 0
+    numNodes = 0
     nextHeading = 0
 
     came_from[goal] = None
@@ -174,12 +185,12 @@ def a_star(mapdata, start, goal):
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
-            turn_cost = (4+nextHeading-heading[current])%4
+            turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
-                totalCount+=1
+                numNodes+=1
                 cost_so_far[next] = new_cost
                 priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
@@ -206,11 +217,11 @@ def a_star(mapdata, start, goal):
             if next[0]/2-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
-            turn_cost = (4+nextHeading-heading[current])%4
+            turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
-                totalCount+=1
+                numNodes+=1
                 cost_so_far[next] = new_cost
                 priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
                 frontier.put(next, priority)
@@ -223,7 +234,7 @@ def a_star(mapdata, start, goal):
                     frontierCells.append([gridTuple[0], gridTuple[1]])
 
                 #add parent to came_from table
-                came_from[next] = current
+                came_from[next] = current # This is currently skipping over one of the indexes
                 heading[next] = nextHeading
 
 
@@ -231,7 +242,7 @@ def a_star(mapdata, start, goal):
     path = []
     current = goal
 
-    print("Total Cost %d" % totalCount)
+    print("Total Node Cost %d" % numNodes)
 
     if came_from[goal] != None:
         while came_from[current] != None:
@@ -261,12 +272,13 @@ def plan_path(mapdata):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata==-1)
+    start_y,start_x = np.where(mapdata=="S")
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata==-2)
+    goal_y, goal_x = np.where(mapdata=="G")
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal)
+    finalPath = cleanup(path)
     ## Return a Path message
-    return path
+    return finalPath
