@@ -156,14 +156,22 @@ def a_star(mapdata, start, goal, heuristicOption):
         #Add viable children to frontier
         #print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-            cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
+            try:
+                cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
+            except IndexError:
+                cell_cost = math.inf
+
 
             if next[1]-current[1] != 0:
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
-            turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
+
+            try:
+                turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
+            except IndexError:
+                turn_cost = math.inf
 
             #TODO: Heuristics go here:::
             verticleDistance = abs(goal[1]-next[1])
@@ -171,17 +179,17 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 4: # Heuristic where both are added together
-                new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + euclidean_distance(goal[0], goal[1], next[0], next[1])
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
                 # If no valid heuristic is applied, error
                 try:
@@ -224,19 +232,17 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + random.randint(1, 10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance,
-                                                                  horizontalDistance) + random.randint(1, 10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance,horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 3:  # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance,
-                                                                  horizontalDistance) + random.randint(1, 10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance,horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 4:  # Heuristic where both are added together
-                new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + euclidean_distance(goal[0], goal[1], next[0], next[1])
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + (
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + (
                             3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
                 # If no valid heuristic is applied, error
