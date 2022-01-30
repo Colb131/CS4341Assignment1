@@ -59,13 +59,11 @@ def neighbors_of_4(mapdata, x, y):
 
     addy = [1, -1, 0, 0]
     addx = [0, 0, 1, -1]
+    cols = len(mapdata[0])
+    rows = len(mapdata)
     for i in range(len(addx)):
-        cols = generateRandomBoard.arrayCols
-        rows = generateRandomBoard.arrayRows
-
-
-        if cols - 1 != y + addy[i] and \
-                rows - 1 != x + addx[i] and \
+        if cols != y + addy[i] and \
+                rows != x + addx[i] and \
                 -1 != x + addx[i] and \
                 -1 != y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
@@ -86,12 +84,11 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 
     addy = [2, -2, 0, 0]
     addx = [0, 0, 2, -2]
+    cols = len(mapdata[0])
+    rows = len(mapdata)
     for i in range(len(addx)):
-        cols = generateRandomBoard.arrayCols
-        rows = generateRandomBoard.arrayRows
-
-        if cols - 1 > y + addy[i] and \
-                rows - 1 > x + addx[i] and \
+        if cols > y + addy[i] and \
+                rows > x + addx[i] and \
                 0 <= x + addx[i] and \
                 0 <= y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
@@ -100,6 +97,7 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 
 
 def cleanup(path):
+    """Cleans up the given path and returns the final path"""
     finalPath = []
     for i in range(0,len(path)-1):
         finalPath.append(path[i])
@@ -276,20 +274,23 @@ def a_star(mapdata, start, goal, heuristicOption):
     #print("Total Node Cost %d" % numNodes)
     aStarData[1] = numNodes
 
+    #Making the path
     if came_from[goal] != None:
         while came_from[current] != None:
             path.append(current)
             current = came_from[current]
         path.append(start)
-    else:
+    else: #If the priority queue is empty, return an empty array
         return path
 
     #reverse path to make it so the first element is the start
     path = path[::-1]
+
     #print("A* completed")
+
+    #Generated Total score
     totalScore = 97
     for point in path:
-        #print(mapdata[point[1],point[0]])
         totalScore -= mapdata[point[1],point[0]]
     #print(totalScore)
     aStarData[2]=totalScore

@@ -31,9 +31,9 @@ def reader():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    iterations = 10
-    numCol = 10
-    numRow = 10
+    iterations = 1
+    numCol = 300
+    numRow = 300
 
     totalNodeCost = [0] * 6
     totalScore = [0] * 6
@@ -62,10 +62,10 @@ if __name__ == '__main__':
             # print("error in iteration ", x)
 
             if iterations == 1:
-                print(path)
-        process = psutil.Process(os.getpid())
-        print(process.memory_info().rss)
-
+                print(len(path))
+        #process = psutil.Process(os.getpid())
+        #print(psutil.virtual_memory()[2])
+        #print(process.memory_info().rss / (1024 * 1024), "MB")
     for i in range(1, 7): # Print our results
-        print("Heuristic #", i, ": ", "Average Node Cost: ", totalNodeCost[i-1] / iterations, " Average Score: ",
+        print("Heuristic #", i, ": ", "Average Total Nodes Expanded: ", totalNodeCost[i-1] / iterations, " Average Score: ",
               totalScore[i-1] / iterations)
