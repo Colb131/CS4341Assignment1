@@ -99,13 +99,26 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 def cleanup(path):
     """Cleans up the given path and returns the final path"""
     finalPath = []
+    pathMoves = []
+    prev_heading = 1
     for i in range(0,len(path)-1):
+        nextHeading = 0
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
+        if next_pos[1] / 2 - curr_pos[1] != 0:
+            nextHeading = next_pos[1] - curr_pos[1] + 2
+        if next_pos[0] / 2 - curr_pos[0] != 0:
+            nextHeading = (((next_pos[0] - curr_pos[0]) + 3) % 3) * 2
+        if()
+        turn_cost = (4 + nextHeading - prev_heading) % 4
+
         if abs(next_pos[0]-curr_pos[0]) >= 2:
+            pathMoves.append("Bash")
             holderpos = (next_pos[0],next_pos[1])
             finalPath.append(holderpos)
+        else:
+            pathMoves.append("Forward")
     return finalPath
 
 
