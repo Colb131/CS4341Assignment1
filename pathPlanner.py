@@ -185,7 +185,7 @@ def a_star(mapdata, start, goal):
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
-            turn_cost = (4+nextHeading-heading[current])%4
+            turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
@@ -217,7 +217,7 @@ def a_star(mapdata, start, goal):
             if next[0]/2-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
-            turn_cost = (4+nextHeading-heading[current])%4
+            turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
             new_cost = cell_cost + cost_so_far[current] #+ euclidean_distance(current[0], current[1], next[0], next[1])
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
