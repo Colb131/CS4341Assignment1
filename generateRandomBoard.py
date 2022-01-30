@@ -3,8 +3,9 @@
 import numpy as np
 from numpy import *
 
-arrayCols = 50
-arrayRows = 50
+# Defined in main, do not use these...
+arrayCols = 100
+arrayRows = 100
 
 def placeS(arrayCols, arrayRows, board):
     startCol = np.random.randint(0, arrayCols - 1)
@@ -15,7 +16,9 @@ def placeS(arrayCols, arrayRows, board):
         board[startCol][startRow] = '-2'
 
 
-def getBoard():
+def getBoard(cols, rows):
+    arrayCols = cols
+    arrayRows = rows
 
     board = np.random.randint(9, size=(arrayCols, arrayRows))+1
 
@@ -30,7 +33,7 @@ def getBoard():
     nparr = np.where(board == -1, 'G', board)
     nparr = np.where(board == -2, 'S', nparr)
 
-    print(nparr)
+    #print(nparr)
 
     return board
 

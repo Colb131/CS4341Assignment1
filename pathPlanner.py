@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import math
+import random
 
 import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
+aStarData = [None] * 3
 def grid_to_index(mapdata, x, y):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.
@@ -14,7 +16,7 @@ def grid_to_index(mapdata, x, y):
     :return  [int] The index.
     """
 
-    ### REQUIRED CREDIT
+
     return y * mapdata.info.width + x
 
 def index_to_grid(mapdata, i):
@@ -26,7 +28,7 @@ def index_to_grid(mapdata, i):
     """
     x = i%mapdata.info.width
     y = int(math.floor(i/mapdata.info.width))
-    ### REQUIRED CREDIT
+
     return (x,y)
 
 
@@ -97,30 +99,6 @@ def neighbors_of_4_can_bash(mapdata, x, y):
     return neighbors
 
 
-
-# @staticmethod
-# def neighbors_of_8(mapdata, x, y):
-#     """
-#     Returns the walkable 8-neighbors cells of (x,y) in the occupancy grid.
-#     :param mapdata [OccupancyGrid] The map information.
-#     :param x       [int]           The X coordinate in the grid.
-#     :param y       [int]           The Y coordinate in the grid.
-#     :return        [[(int,int)]]   A list of walkable 8-neighbors.
-#     """
-#
-#     ### REQUIRED CREDIT
-#     neighbors = []
-#
-#     addx = [1, -1, 0, 0, 1, 1, -1, -1]
-#     addy = [0, 0, 1, -1, 1, -1, -1, 1]
-#     for i in range(len(addx)):
-#         try:
-#            neighbors.append((x + addx[i], y + addy[i]))
-#            break
-#         except Exception as err:
-#             print("Not a valid index!")
-#     return neighbors
-
 def cleanup(path):
     finalPath = []
     for i in range(0,len(path)-1):
@@ -136,7 +114,7 @@ def cleanup(path):
 def a_star(mapdata, start, goal, heuristicOption):
     """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
     ### REQUIRED CREDIT
-    print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
+    #print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {}
@@ -172,11 +150,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
         # If we have reached the goal, leave
         if current == goal:
-            print("Goal achieved")
+            #print("Goal achieved")
             break
 
         #Add viable children to frontier
-        print("Currently: (%d,%d)" % (current[0], current[1]))
+        #print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
             cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
 
@@ -191,24 +169,25 @@ def a_star(mapdata, start, goal, heuristicOption):
             verticleDistance = abs(goal[1]-next[1])
             horizontalDistance = abs(goal[0]-next[0])
 
-            #print(horizontalDistance, verticleDistance)
+            #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                new_cost = cell_cost + cost_so_far[current]
+                new_cost = cell_cost + cost_so_far[current] + random.randint(1,10)
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance, horizontalDistance)
+                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance, horizontalDistance)
+                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 4: # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + math.sqrt((horizontalDistance * horizontalDistance) + (verticleDistance * verticleDistance))
+                new_cost = cell_cost + cost_so_far[current] + euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + (3 * math.sqrt((horizontalDistance * horizontalDistance) + (verticleDistance * verticleDistance)))
+                new_cost = cell_cost + cost_so_far[current] + (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
-                #If no valid heuristic is applied, simply revert to #1
-                new_cost = cell_cost + cost_so_far[current]
-
-                #+ euclidean_distance(current[0], current[1], next[0], next[1])
+                # If no valid heuristic is applied, error
+                try:
+                    raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
+                except Exception as error:
+                    print(error)
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 numNodes+=1
@@ -237,31 +216,34 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]/2-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            #print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
-            # TODO: Heuristics go here:::
             verticleDistance = abs(goal[1] - next[1])
             horizontalDistance = abs(goal[0] - next[0])
 
-            #print(horizontalDistance, verticleDistance)
+            # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
-                new_cost = cell_cost + cost_so_far[current]
+                new_cost = cell_cost + cost_so_far[current] + random.randint(1, 10)
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance, horizontalDistance)
+                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance,
+                                                                  horizontalDistance) + random.randint(1, 10)
             elif heuristicOption == 3:  # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance, horizontalDistance)
+                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance,
+                                                                  horizontalDistance) + random.randint(1, 10)
             elif heuristicOption == 4:  # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + math.sqrt(
-                    horizontalDistance * horizontalDistance + verticleDistance * verticleDistance)
+                new_cost = cell_cost + cost_so_far[current] + euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + (3 * math.sqrt(
-                    horizontalDistance * horizontalDistance + verticleDistance * verticleDistance))
+                new_cost = cell_cost + cost_so_far[current] + (
+                            3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
-                # If no valid heuristic is applied, simply revert to #1
-                new_cost = cell_cost + cost_so_far[current]
+                # If no valid heuristic is applied, error
+                try:
+                    raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
+                except Exception as error:
+                    print(error)
 
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 numNodes+=1
@@ -285,7 +267,8 @@ def a_star(mapdata, start, goal, heuristicOption):
     path = []
     current = goal
 
-    print("Total Node Cost %d" % numNodes)
+    #print("Total Node Cost %d" % numNodes)
+    aStarData[1] = numNodes
 
     if came_from[goal] != None:
         while came_from[current] != None:
@@ -297,12 +280,13 @@ def a_star(mapdata, start, goal, heuristicOption):
 
     #reverse path to make it so the first element is the start
     path = path[::-1]
-    print("A* completed")
+    #print("A* completed")
     totalScore = 97
     for point in path:
-        print(mapdata[point[1],point[0]])
+        #print(mapdata[point[1],point[0]])
         totalScore -= mapdata[point[1],point[0]]
-    print(totalScore)
+    #print(totalScore)
+    aStarData[2]=totalScore
     return path
 
 
@@ -323,5 +307,8 @@ def plan_path(mapdata, heuristicOption):
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path)
+
+    aStarData[0] = finalPath
+
     ## Return a Path message
-    return finalPath
+    return aStarData
