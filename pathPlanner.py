@@ -188,19 +188,22 @@ def a_star(mapdata, start, goal, heuristicOption):
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             #TODO: Heuristics go here:::
+            verticleDistance = abs(goal[1]-next[1])
+            horizontalDistance = abs(goal[0]-next[0])
 
-            if heuristicOption == 1:
+            print(horizontalDistance, verticleDistance)
+            if heuristicOption == 1: # No heuristic
                 new_cost = cell_cost + cost_so_far[current]
-            elif heuristicOption == 2:
-                new_cost = cell_cost + cost_so_far[current]
-            elif heuristicOption == 3:
-                new_cost = cell_cost + cost_so_far[current]
-            elif heuristicOption == 4:
-                new_cost = cell_cost + cost_so_far[current]
-            elif heuristicOption == 5:
-                new_cost = cell_cost + cost_so_far[current]
-            elif heuristicOption == 6:
-                new_cost = cell_cost + cost_so_far[current]
+            elif heuristicOption == 2: # Heuristic based upon the whichever is lower
+                new_cost = cell_cost + cost_so_far[current] + min(verticleDistance, horizontalDistance)
+            elif heuristicOption == 3: # Heuristic based upon whichever is higher
+                new_cost = cell_cost + cost_so_far[current] + max(verticleDistance, horizontalDistance)
+            elif heuristicOption == 4: # Heuristic where both are added together
+                new_cost = cell_cost + cost_so_far[current] + horizontalDistance + verticleDistance
+            elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
+                new_cost = cell_cost + cost_so_far[current] + math.sqrt(horizontalDistance * horizontalDistance + verticleDistance * verticleDistance)
+            elif heuristicOption == 6: # Heuristic #5 multiplied by 3
+                new_cost = cell_cost + cost_so_far[current] + (3 * math.sqrt(horizontalDistance * horizontalDistance + verticleDistance * verticleDistance))
             else:
                 #If no valid heuristic is applied, simply revert to #1
                 new_cost = cell_cost + cost_so_far[current]
