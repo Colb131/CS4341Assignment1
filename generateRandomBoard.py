@@ -3,10 +3,6 @@
 import numpy as np
 from numpy import *
 
-# Defined in main, do not use these...
-arrayCols = 100
-arrayRows = 100
-
 def placeS(arrayCols, arrayRows, board):
     startCol = np.random.randint(0, arrayCols - 1)
     startRow = np.random.randint(0, arrayRows - 1)
