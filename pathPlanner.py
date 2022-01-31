@@ -106,12 +106,27 @@ def cleanup(path):
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
+
+        #Turning
         if next_pos[1] / 2 - curr_pos[1] != 0:
             nextHeading = next_pos[1] - curr_pos[1] + 2
         if next_pos[0] / 2 - curr_pos[0] != 0:
             nextHeading = (((next_pos[0] - curr_pos[0]) + 3) % 3) * 2
-        if()
-        turn_cost = (4 + nextHeading - prev_heading) % 4
+        turn = nextHeading - prev_heading
+        if turn == -3:
+            turn = 1
+        if turn == 3:
+            turn = -1
+        if turn == 1:
+            pathMoves.append("Right")
+        if turn == 2:
+            pathMoves.append("Right")
+            pathMoves.append("Right")
+        if turn == -1:
+            pathMoves.append("Left")
+        if turn == -2:
+            pathMoves.append("Left")
+            pathMoves.append("Left")
 
         if abs(next_pos[0]-curr_pos[0]) >= 2:
             pathMoves.append("Bash")
@@ -119,7 +134,7 @@ def cleanup(path):
             finalPath.append(holderpos)
         else:
             pathMoves.append("Forward")
-    return finalPath
+    return (finalPath,pathMoves)
 
 
 def a_star(mapdata, start, goal, heuristicOption):
@@ -328,7 +343,7 @@ def plan_path(mapdata, heuristicOption):
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path)
 
-    aStarData[0] = finalPath
-
+    aStarData[0] = finalPath[0]# Path taken
+    aStarData[1] = finalPath[1]# Actions Taken
     ## Return a Path message
     return aStarData
