@@ -224,11 +224,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                heuristic = random.randint(1,10)
+                heuristic = 0
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                heuristic = min(verticleDistance, horizontalDistance) + random.randint(1,10)
+                heuristic = min(verticleDistance, horizontalDistance)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                heuristic = max(verticleDistance, horizontalDistance) + random.randint(1,10)
+                heuristic = max(verticleDistance, horizontalDistance)
             elif heuristicOption == 4: # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
@@ -280,11 +280,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
-                heuristic = random.randint(1,10)
+                heuristic = 0
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
-                heuristic = min(verticleDistance,horizontalDistance) + random.randint(1,10)
+                heuristic = min(verticleDistance,horizontalDistance)
             elif heuristicOption == 3:  # Heuristic based upon whichever is higher
-                heuristic = max(verticleDistance,horizontalDistance) + random.randint(1,10)
+                heuristic = max(verticleDistance,horizontalDistance)
             elif heuristicOption == 4:  # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
@@ -349,10 +349,10 @@ def plan_path(mapdata, heuristicOption):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata=='S')
+    start_y,start_x = np.where(mapdata==-2)
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata=='G')
+    goal_y, goal_x = np.where(mapdata==-1)
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal, heuristicOption)
