@@ -34,17 +34,17 @@ if __name__ == '__main__':
     # print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
 
     for x in range(iterations):
-        #board = generateRandomBoard.getBoard(numCol, numRow)
-        board = reader()
-        heuristicOption = int(input("Please enter desired heuristic: "))
+        board = generateRandomBoard.getBoard(numCol, numRow)
+        #board = reader()
+        #heuristicOption = int(input("Please enter desired heuristic: "))
 
         if iterations == 1:
             print(board)
-        #print(x)
+
         for i in range(1,7):
 
 
-            aStarData = pathPlanner.plan_path(board, heuristicOption)
+            aStarData = pathPlanner.plan_path(board, i)
 
 
             path = aStarData[0]
