@@ -25,13 +25,13 @@ def reader():
 if __name__ == '__main__':
 
     iterations = 1
-    numCol = 300
-    numRow = 300
+    numCol = 10
+    numRow = 10
 
     totalNodeCost = [0] * 6
     totalScore = [0] * 6
 
-    # print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
+    print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
 
     for x in range(iterations):
         board = generateRandomBoard.getBoard(numCol, numRow)

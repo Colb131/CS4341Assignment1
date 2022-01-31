@@ -206,11 +206,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance)
             elif heuristicOption == 4: # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
