@@ -7,7 +7,7 @@ import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
-aStarData = [None] * 3
+aStarData = [None] * 4
 def grid_to_index(mapdata, x, y):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.

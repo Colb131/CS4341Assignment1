@@ -3,7 +3,7 @@ import generateRandomBoard
 import csv
 import numpy as np
 
-aStarData = [None] * 3
+aStarData = [None] * 4
 
 def reader():
     file = input("Please enter file name: ")
