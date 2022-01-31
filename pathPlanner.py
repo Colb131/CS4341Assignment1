@@ -251,7 +251,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]/2-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            #print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             verticleDistance = abs(goal[1] - next[1])
@@ -300,7 +300,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     path = []
     current = goal
 
-    #print("Total Node Cost %d" % numNodes)
+    print("Total Node Cost %d" % numNodes)
 
     aStarData[1] = len(expandedCells)
 
