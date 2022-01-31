@@ -335,13 +335,6 @@ def a_star(mapdata, start, goal, heuristicOption):
     path = path[::-1]
 
     #print("A* completed")
-
-    #Generated Total score
-    totalScore = 97
-    for point in path:
-        totalScore -= mapdata[point[1],point[0]]
-    #print(totalScore)
-    aStarData[2]=totalScore #TODO : Fix this, doesn't take into account turning or bash
     return path
 
 
@@ -365,5 +358,6 @@ def plan_path(mapdata, heuristicOption):
 
     aStarData[0] = finalPath[0]# Path taken
     aStarData[3] = finalPath[1]# Actions Taken
+    aStarData[2] = finalPath[2]# Total Score
     ## Return a Path message
     return aStarData
