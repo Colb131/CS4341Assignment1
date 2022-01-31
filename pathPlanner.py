@@ -96,18 +96,29 @@ def neighbors_of_4_can_bash(mapdata, x, y):
     return neighbors
 
 
-def cleanup(path):
-    """Cleans up the given path and returns the final path"""
+def cleanup(path,mapdata):
+    """Cleans up the given path and returns the final path, actions taken, and final score
+    :param mapdata map information filled with 1-9's and one S and G
+    """
     finalPath = []
     pathMoves = []
     prev_heading = 1
+    final_score = 0
+    # For all nodes in the path, from the start to the finish,
+    # check the current node and the next node to see what type of
+    # move it is, if its valid, what actions were taken to reach it
     for i in range(0,len(path)-1):
         nextHeading = 0
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
+        if mapdata[curr_pos[1]][curr_pos[0]] != 'S':
+            #Add the cost of the current cell
+            final_score += mapdata[curr_pos[1]][curr_pos[0]]
+        if mapdata[curr_pos[1]][curr_pos[0]] == 'G':
+            print("Zhoinks scoob, Why the frickity frack are you here?")
 
-        #Turning
+        #Turning, both adding the cost of the turn and adding the actions
         if next_pos[1] / 2 - curr_pos[1] != 0:
             nextHeading = next_pos[1] - curr_pos[1] + 2
         if next_pos[0] / 2 - curr_pos[0] != 0:
@@ -118,27 +129,32 @@ def cleanup(path):
         if turn == 3:
             turn = -1
         if turn == 1:
+            final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
             pathMoves.append("Right")
-        if turn == 2:
+        if turn == 2 or turn == -2: # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
+            final_score += mapdata[curr_pos[1]][curr_pos[0]]
             pathMoves.append("Right")
             pathMoves.append("Right")
         if turn == -1:
+            final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
             pathMoves.append("Left")
         if turn == -2:
+            final_score += mapdata[curr_pos[1]][curr_pos[0]]
             pathMoves.append("Left")
             pathMoves.append("Left")
 
         if abs(next_pos[0]-curr_pos[0]) >= 2:
             pathMoves.append("Bash")
+            final_score += 3
             holderpos = (next_pos[0],next_pos[1])
             finalPath.append(holderpos)
         else:
             pathMoves.append("Forward")
-    return (finalPath,pathMoves)
+    return (finalPath,pathMoves,100-final_score)
 
 
 def a_star(mapdata, start, goal, heuristicOption):
-    """The start and goal are a tuple in grid format, mapdata is a matrix of size x,y"""
+    """The start and goal are a tuple in grid format, mapdata is a 2D array of size x,y"""
     ### REQUIRED CREDIT
     #print("Executing A* from (%d,%d) to (%d,%d)" % (start[0], start[1], goal[0], goal[1]))
     frontier = PriorityQueue()
@@ -151,6 +167,8 @@ def a_star(mapdata, start, goal, heuristicOption):
     heading[start] = 1 # 1 is up, 2 is to the right, 3 is bottom, 4 is to the left
     numNodes = 0
     nextHeading = 0
+    heuristic = 0
+    cost = 0
 
     came_from[goal] = None
 
@@ -161,7 +179,6 @@ def a_star(mapdata, start, goal, heuristicOption):
         gridTuple = priorityTuple[1]
         frontierCells.append([gridTuple[0], gridTuple[1]])
         # print(gridTuple)
-
 
     #expanded cells to show pathed frontiers
     expandedCells = []
@@ -203,30 +220,33 @@ def a_star(mapdata, start, goal, heuristicOption):
             verticleDistance = abs(goal[1]-next[1])
             horizontalDistance = abs(goal[0]-next[0])
 
+            cost = turn_cost + cell_cost + cost_so_far[current]
+
             #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
+                heuristic = random.randint(1,10)
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance) + random.randint(1,10)
+                heuristic = min(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance) + random.randint(1,10)
+                heuristic = max(verticleDistance, horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 4: # Heuristic where both are added together
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
+                heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
+                heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
                 # If no valid heuristic is applied, error
                 try:
                     raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
                 except Exception as error:
+                    heuristic = 0
                     print(error)
 
-            if next not in cost_so_far or new_cost < cost_so_far[next]:
+            if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
                 numNodes+=1
-                cost_so_far[next] = new_cost
-                priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
+                cost_so_far[next] = cost
+                priority = cost + heuristic
                 frontier.put(next, priority)
 
                 # update frontier message
@@ -341,7 +361,7 @@ def plan_path(mapdata, heuristicOption):
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal, heuristicOption)
-    finalPath = cleanup(path)
+    finalPath = cleanup(path,mapdata)
 
     aStarData[0] = finalPath[0]# Path taken
     aStarData[3] = finalPath[1]# Actions Taken
