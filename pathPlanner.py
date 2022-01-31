@@ -300,7 +300,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     current = goal
 
     #print("Total Node Cost %d" % numNodes)
-    aStarData[1] = numNodes
+    aStarData[1] = numNodes #Nodes expanded
 
     #Making the path
     if came_from[goal] != None:
@@ -321,7 +321,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     for point in path:
         totalScore -= mapdata[point[1],point[0]]
     #print(totalScore)
-    aStarData[2]=totalScore
+    aStarData[2]=totalScore #TODO : Fix this, doesn't take into account turning or bash
     return path
 
 
@@ -344,6 +344,6 @@ def plan_path(mapdata, heuristicOption):
     finalPath = cleanup(path)
 
     aStarData[0] = finalPath[0]# Path taken
-    aStarData[1] = finalPath[1]# Actions Taken
+    aStarData[3] = finalPath[1]# Actions Taken
     ## Return a Path message
     return aStarData
