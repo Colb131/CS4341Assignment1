@@ -7,7 +7,7 @@ import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
-aStarData = [None] * 3
+aStarData = [None] * 4
 def grid_to_index(mapdata, x, y):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.
@@ -209,7 +209,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
 
             try:
                 turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
@@ -349,10 +349,10 @@ def plan_path(mapdata, heuristicOption):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata==-2)
+    start_y,start_x = np.where(mapdata=='S')
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata==-1)
+    goal_y, goal_x = np.where(mapdata=='G')
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal, heuristicOption)
