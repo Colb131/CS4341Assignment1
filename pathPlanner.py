@@ -276,31 +276,33 @@ def a_star(mapdata, start, goal, heuristicOption):
             verticleDistance = abs(goal[1] - next[1])
             horizontalDistance = abs(goal[0] - next[0])
 
+            cost = turn_cost + cell_cost + cost_so_far[current]
+
             # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
+                heuristic = random.randint(1,10)
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance,horizontalDistance) + random.randint(1,10)
+                heuristic = min(verticleDistance,horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 3:  # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance,horizontalDistance) + random.randint(1,10)
+                heuristic = max(verticleDistance,horizontalDistance) + random.randint(1,10)
             elif heuristicOption == 4:  # Heuristic where both are added together
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
+                heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + (
-                            3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
+                heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
                 # If no valid heuristic is applied, error
                 try:
                     raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
                 except Exception as error:
+                    heuristic = 0
                     print(error)
 
-            if next not in cost_so_far or new_cost < cost_so_far[next]:
+            if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
                 numNodes+=1
-                cost_so_far[next] = new_cost
-                priority = new_cost # + PathPlanner.euclidean_distance(current[0], current[1], goal[0], goal[1])
+                cost_so_far[next] = cost
+                priority = cost + heuristic
                 frontier.put(next, priority)
 
                 # update frontier message

@@ -7,7 +7,7 @@ import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
-aStarData = [None] * 3
+aStarData = [None] * 4
 def grid_to_index(mapdata, x, y):
     """
     Returns the index corresponding to the given (x,y) coordinates in the occupancy grid.
@@ -99,14 +99,43 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 def cleanup(path):
     """Cleans up the given path and returns the final path"""
     finalPath = []
+    pathMoves = []
+    prev_heading = 1
     for i in range(0,len(path)-1):
+        nextHeading = 0
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
+
+        #Turning
+        if next_pos[1] / 2 - curr_pos[1] != 0:
+            nextHeading = next_pos[1] - curr_pos[1] + 2
+        if next_pos[0] / 2 - curr_pos[0] != 0:
+            nextHeading = (((next_pos[0] - curr_pos[0]) + 3) % 3) * 2
+
+        turn = nextHeading - prev_heading
+        if turn == -3:
+            turn = 1
+        if turn == 3:
+            turn = -1
+        if turn == 1:
+            pathMoves.append("Right")
+        if turn == 2:
+            pathMoves.append("Right")
+            pathMoves.append("Right")
+        if turn == -1:
+            pathMoves.append("Left")
+        if turn == -2:
+            pathMoves.append("Left")
+            pathMoves.append("Left")
+
         if abs(next_pos[0]-curr_pos[0]) >= 2:
+            pathMoves.append("Bash")
             holderpos = (next_pos[0],next_pos[1])
             finalPath.append(holderpos)
-    return finalPath
+        else:
+            pathMoves.append("Forward")
+    return (finalPath,pathMoves)
 
 
 def a_star(mapdata, start, goal, heuristicOption):
@@ -177,11 +206,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             #print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1: # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost
             elif heuristicOption == 2: # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance, horizontalDistance)
             elif heuristicOption == 3: # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance, horizontalDistance)
             elif heuristicOption == 4: # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
@@ -222,7 +251,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]/2-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            #print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
 
             verticleDistance = abs(goal[1] - next[1])
@@ -230,11 +259,11 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance,horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + min(verticleDistance,horizontalDistance)
             elif heuristicOption == 3:  # Heuristic based upon whichever is higher
-                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance,horizontalDistance) + random.randint(1,10)
+                new_cost = cell_cost + cost_so_far[current] + turn_cost + max(verticleDistance,horizontalDistance)
             elif heuristicOption == 4:  # Heuristic where both are added together
                 new_cost = cell_cost + cost_so_far[current] + turn_cost + horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
@@ -271,8 +300,9 @@ def a_star(mapdata, start, goal, heuristicOption):
     path = []
     current = goal
 
-    #print("Total Node Cost %d" % numNodes)
-    aStarData[1] = numNodes
+    print("Total Node Cost %d" % numNodes)
+
+    aStarData[1] = len(expandedCells)
 
     #Making the path
     if came_from[goal] != None:
@@ -293,7 +323,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     for point in path:
         totalScore -= mapdata[point[1],point[0]]
     #print(totalScore)
-    aStarData[2]=totalScore
+    aStarData[2]=totalScore #TODO : Fix this, doesn't take into account turning or bash
     return path
 
 
@@ -315,7 +345,7 @@ def plan_path(mapdata, heuristicOption):
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path)
 
-    aStarData[0] = finalPath
-
+    aStarData[0] = finalPath[0]# Path taken
+    aStarData[3] = finalPath[1]# Actions Taken
     ## Return a Path message
     return aStarData
