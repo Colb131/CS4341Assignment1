@@ -44,8 +44,8 @@ def reader():
 if __name__ == '__main__':
 
     iterations = 1
-    numCol = 300
-    numRow = 300
+    numCol = 10
+    numRow = 10
 
     totalNodeCost = [0] * 6
     totalScore = [0] * 6
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
         if iterations == 1:
             print(board)
-            print(type(board))
+            #print(type(board))
 
         for i in range(1,7):
 
