@@ -20,7 +20,22 @@ def reader():
     # result = np.where(result == 'G', -1, result)
     # result = np.where(result == 'S', -2, result)
     # result.astype(int)
-    return data
+
+    print(data.dtype)
+    # heuristicOption = int(input("Please enter desired heuristic: "))
+
+    newBoard = []
+    for arr in data:
+        newRow = []
+        for val in arr:
+            newRow.append(ord(val) - 48)
+        newBoard.append(newRow)
+    # print(newBoard)
+    board = np.array(newBoard)
+    #print(board)
+    #print(type(board))
+
+    return board
 
 
 
@@ -29,8 +44,8 @@ def reader():
 if __name__ == '__main__':
 
     iterations = 1
-    numCol = 10
-    numRow = 10
+    numCol = 300
+    numRow = 300
 
     totalNodeCost = [0] * 6
     totalScore = [0] * 6
@@ -38,26 +53,14 @@ if __name__ == '__main__':
     print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
 
     for x in range(iterations):
-        board = reader() # Gives us a ndarray
-        print(board.dtype)
-        # heuristicOption = int(input("Please enter desired heuristic: "))
+        #board = reader() # Gives us a ndarray
 
-        if iterations == 1:
-            print(board)
-        newBoard = []
-        for arr in board:
-            newRow = []
-            for val in arr:
-                newRow.append(ord(val)-48)
-            newBoard.append(newRow)
-        # print(newBoard)
-        board = np.array(newBoard)
-        print(board)
-        print(type(board))
         # np.array([s[0].astype(int) for s in board])
 
         board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
-        print(type(board))
+        if iterations == 1:
+            print(board)
+            print(type(board))
 
         for i in range(1,7):
 

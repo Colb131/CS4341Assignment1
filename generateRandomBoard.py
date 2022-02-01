@@ -29,7 +29,7 @@ def getBoard(cols, rows):
     nparr = np.where(board == -1, ord('G')-48, board)
     # print(nparr)
     nparr = np.where(board == -2, ord('S')-48, nparr)
-    print(nparr)
+    #print(nparr)
 
     return board
 

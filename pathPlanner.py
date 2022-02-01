@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import math
-import random
 
-import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
@@ -199,7 +197,7 @@ def a_star(mapdata, start, goal, heuristicOption):
         #Add viable children to frontier
         #print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-
+            numNodes += 1
             # Takes care of when the data = G or S
             if mapdata[next[1]][next[0]] > 10:
                 cell_cost = 0  # Cost of the next cell plus the cell it just jumped over
@@ -210,7 +208,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
 
             try:
                 turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
@@ -233,7 +231,7 @@ def a_star(mapdata, start, goal, heuristicOption):
             elif heuristicOption == 4: # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = 2 * euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
@@ -245,7 +243,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                     print(error)
 
             if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
-                numNodes+=1
+
                 cost_so_far[next] = cost
                 priority = cost + heuristic
                 frontier.put(next, priority)
@@ -264,7 +262,7 @@ def a_star(mapdata, start, goal, heuristicOption):
 
         #This is the code for the BASH functionality, so its only going straight I believe
         for next in neighbors_of_4_can_bash(mapdata,current[0], current[1]):
-
+            numNodes += 1
             # Takes care of when the data = G or S
             if mapdata[next[1]][next[0]] > 10:
                 cell_cost = 3 # Cost of the next cell plus the cell it just jumped over
@@ -294,7 +292,7 @@ def a_star(mapdata, start, goal, heuristicOption):
             elif heuristicOption == 4:  # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
-                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = 2 * euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
@@ -303,6 +301,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                     raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
                 except Exception as error:
                     heuristic = 0
+
                     print(error)
 
             if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
