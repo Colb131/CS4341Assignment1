@@ -199,11 +199,12 @@ def a_star(mapdata, start, goal, heuristicOption):
         #Add viable children to frontier
         #print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-            try:
-                cell_cost = mapdata[next[1]][next[0]] # Cost of the next cell
-            except IndexError:
-                cell_cost = math.inf
 
+            # Takes care of when the data = G or S
+            if mapdata[next[1]][next[0]] > 10:
+                cell_cost = 0  # Cost of the next cell plus the cell it just jumped over
+            else:
+                cell_cost = mapdata[next[1]][next[0]]
 
             if next[1]-current[1] != 0:
                 nextHeading = next[1] - current[1] + 2
@@ -263,7 +264,12 @@ def a_star(mapdata, start, goal, heuristicOption):
 
         #This is the code for the BASH functionality, so its only going straight I believe
         for next in neighbors_of_4_can_bash(mapdata,current[0], current[1]):
-            cell_cost = 3 + mapdata[next[1]][next[0]] # Cost of the next cell plus the cell it just jumped over
+
+            # Takes care of when the data = G or S
+            if mapdata[next[1]][next[0]] > 10:
+                cell_cost = 3 # Cost of the next cell plus the cell it just jumped over
+            else:
+                cell_cost = 3 + mapdata[next[1]][next[0]]
 
             #Still have to turn to get in position to bash
             if next[1]/2-current[1] != 0:
@@ -349,10 +355,10 @@ def plan_path(mapdata, heuristicOption):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata=='S')
+    start_y,start_x = np.where(mapdata==(ord('S')-48))
     # start = (1,2)
     start = (int(start_x),int(start_y))
-    goal_y, goal_x = np.where(mapdata=='G')
+    goal_y, goal_x = np.where(mapdata==(ord('G')-48))
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     path = a_star(mapdata, start, goal, heuristicOption)

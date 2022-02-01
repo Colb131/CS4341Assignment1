@@ -38,12 +38,26 @@ if __name__ == '__main__':
     print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
 
     for x in range(iterations):
-        #board = generateRandomBoard.getBoard(numCol, numRow)
-        board = reader()
-        heuristicOption = int(input("Please enter desired heuristic: "))
+        board = reader() # Gives us a ndarray
+        print(board.dtype)
+        # heuristicOption = int(input("Please enter desired heuristic: "))
 
         if iterations == 1:
             print(board)
+        newBoard = []
+        for arr in board:
+            newRow = []
+            for val in arr:
+                newRow.append(ord(val)-48)
+            newBoard.append(newRow)
+        # print(newBoard)
+        board = np.array(newBoard)
+        print(board)
+        print(type(board))
+        # np.array([s[0].astype(int) for s in board])
+
+        board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
+        print(type(board))
 
         for i in range(1,7):
 
