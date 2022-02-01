@@ -7,16 +7,20 @@ aStarData = [None] * 4
 
 def reader():
     file = input("Please enter file name: ")
-    with open(file, 'r') as f:
-        reader = csv.reader(f, dialect='excel', delimiter='\t')
-        x = list(reader)
-        result = np.array(x)
+    # with open(file, 'r') as f:
+    #     reader = csv.reader(f, dialect='excel', delimiter='\t')
+    #     x = list(reader)
+    #     result = np.array(x)
 
-    result = np.asmatrix(result)
+    data = np.loadtxt(file, delimiter="\t", dtype=str)
+    data = np.transpose(data)
+    print(data.size)
+    #result = np.asmatrix(result)
+    # matrix = np.asmatrix(result)
     # result = np.where(result == 'G', -1, result)
     # result = np.where(result == 'S', -2, result)
     # result.astype(int)
-    return result
+    return data
 
 
 
@@ -34,9 +38,9 @@ if __name__ == '__main__':
     print("Running ", iterations, " iterations of board size (", numCol, ",", numRow,")")
 
     for x in range(iterations):
-        board = generateRandomBoard.getBoard(numCol, numRow)
-        #board = reader()
-        #heuristicOption = int(input("Please enter desired heuristic: "))
+        #board = generateRandomBoard.getBoard(numCol, numRow)
+        board = reader()
+        heuristicOption = int(input("Please enter desired heuristic: "))
 
         if iterations == 1:
             print(board)
