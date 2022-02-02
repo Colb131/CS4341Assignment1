@@ -123,32 +123,30 @@ def cleanup(path,mapdata):
             turn = 1
         if turn == 3:
             turn = -1
-        if turn == 1:
+        if turn == 1 and mapdata[curr_pos[1]][curr_pos[0]] < 10:
             final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
             pathMoves.append("Right")
-        if turn == 2 or turn == -2: # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
+        if turn == 2 or turn == -2 and mapdata[curr_pos[1]][curr_pos[0]] < 10: # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
             final_score += mapdata[curr_pos[1]][curr_pos[0]]
             pathMoves.append("Right")
             pathMoves.append("Right")
-        if turn == -1:
+        if turn == -1 and mapdata[curr_pos[1]][curr_pos[0]] < 10:
             final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
-            pathMoves.append("Left")
-        if turn == -2:
-            final_score += mapdata[curr_pos[1]][curr_pos[0]]
-            pathMoves.append("Left")
             pathMoves.append("Left")
 
         if abs(next_pos[0]-curr_pos[0]) >= 2:
             pathMoves.append("Bash")
             final_score += 3
-            holderpos = (next_pos[0],next_pos[1])
+            holderpos = (int((next_pos[0]-curr_pos[0])/2+curr_pos[0]),int((next_pos[1]-curr_pos[1])/2+curr_pos[1]))
             finalPath.append(holderpos)
+            pathMoves.append("Forward")
         else:
-            if abs(next_pos[0] - curr_pos[0]) >= 2:
+            if abs(next_pos[1] - curr_pos[1]) >= 2:
                 pathMoves.append("Bash")
                 final_score += 3
-                holderpos = (next_pos[0], next_pos[1])
+                holderpos = (int((next_pos[0]-curr_pos[0])/2+curr_pos[0]),int((next_pos[1]-curr_pos[1])/2+curr_pos[1]))
                 finalPath.append(holderpos)
+                pathMoves.append("Forward")
             else:
                 pathMoves.append("Forward")
     return (finalPath,pathMoves,100-final_score)
@@ -165,7 +163,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     heading = {}
     came_from[start] = None
     cost_so_far[start] = 0
-    heading[start] = 1 # 1 is up, 2 is to the right, 3 is bottom, 4 is to the left
+    heading[start] = 2 # 1 is up in the y direction, 2 is to the positive x, 3 is -y, 4 is -x
     numNodes = 0
     nextHeading = 0
     heuristic = 0
