@@ -59,16 +59,8 @@ def neighbors_of_4(mapdata, x, y):
 
     addy = [1, -1, 0, 0]
     addx = [0, 0, 1, -1]
-    cols = len(mapdata)
-    rows = len(mapdata[0])
-    for i in range(len(addx)):
-        if cols > y + addy[i] and \
-                rows > x + addx[i] and \
-                0 <= x + addx[i] and \
-                0 <= y + addy[i]:
-            neighbors.append((x + addx[i], y + addy[i]))
 
-    return neighbors
+    return getNeighbors(mapdata, addy, addx, x, y)
 
 def neighbors_of_4_can_bash(mapdata, x, y):
     """
@@ -80,10 +72,15 @@ def neighbors_of_4_can_bash(mapdata, x, y):
     """
 
     ### REQUIRED CREDIT
-    neighbors = []
 
     addy = [2, -2, 0, 0]
     addx = [0, 0, 2, -2]
+
+    return getNeighbors(mapdata, addy, addx, x, y)
+
+
+def getNeighbors(mapdata, addy, addx, x, y):
+    neighbors = []
     cols = len(mapdata)
     rows = len(mapdata[0])
     for i in range(len(addx)):
@@ -92,9 +89,7 @@ def neighbors_of_4_can_bash(mapdata, x, y):
                 0 <= x + addx[i] and \
                 0 <= y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
-
     return neighbors
-
 
 def cleanup(path,mapdata):
     """Cleans up the given path and returns the final path, actions taken, and final score
@@ -223,7 +218,6 @@ def a_star(mapdata, start, goal, heuristicOption):
             except IndexError:
                 turn_cost = math.inf
 
-            #TODO: Heuristics go here:::
             verticleDistance = abs(goal[1]-next[1])
             horizontalDistance = abs(goal[0]-next[0])
 
@@ -362,7 +356,6 @@ def plan_path(mapdata, heuristicOption):
     ## In case of error, return an empty path
     ## Execute A*
     start_y,start_x = np.where(mapdata==(ord('S')-48))
-    # start = (1,2)
     start = (int(start_x),int(start_y))
     print("Start : %s, %s" %(start[0],start[1]))
     goal_y, goal_x = np.where(mapdata==(ord('G')-48))
