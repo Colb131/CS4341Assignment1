@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     iterations = 1
     numCol = 10
-    numRow = 10
+    numRow = 5
 
     totalNodeCost = [0] * 6
     totalScore = [0] * 6
@@ -53,12 +53,12 @@ if __name__ == '__main__':
         # print(newBoard)
         board = np.array(newBoard)
         print(board)
-        print(type(board))
+        # board = np.transpose(board)
+        # print(board)
+        # print(board[3])
         # np.array([s[0].astype(int) for s in board])
-
-        board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
-        print(type(board))
-
+        # board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
+        # print(board[5][0])
         for i in range(1,7):
 
 

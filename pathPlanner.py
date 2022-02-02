@@ -59,13 +59,13 @@ def neighbors_of_4(mapdata, x, y):
 
     addy = [1, -1, 0, 0]
     addx = [0, 0, 1, -1]
-    cols = len(mapdata[0])
-    rows = len(mapdata)
+    cols = len(mapdata)
+    rows = len(mapdata[0])
     for i in range(len(addx)):
-        if cols != y + addy[i] and \
-                rows != x + addx[i] and \
-                -1 != x + addx[i] and \
-                -1 != y + addy[i]:
+        if cols > y + addy[i] and \
+                rows > x + addx[i] and \
+                0 <= x + addx[i] and \
+                0 <= y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
 
     return neighbors
@@ -84,8 +84,8 @@ def neighbors_of_4_can_bash(mapdata, x, y):
 
     addy = [2, -2, 0, 0]
     addx = [0, 0, 2, -2]
-    cols = len(mapdata[0])
-    rows = len(mapdata)
+    cols = len(mapdata)
+    rows = len(mapdata[0])
     for i in range(len(addx)):
         if cols > y + addy[i] and \
                 rows > x + addx[i] and \
@@ -112,7 +112,7 @@ def cleanup(path,mapdata):
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
-        if mapdata[curr_pos[1]][curr_pos[0]] != 'S':
+        if mapdata[curr_pos[1]][curr_pos[0]] < 10:
             #Add the cost of the current cell
             final_score += mapdata[curr_pos[1]][curr_pos[0]]
         if mapdata[curr_pos[1]][curr_pos[0]] == 'G':
@@ -149,7 +149,13 @@ def cleanup(path,mapdata):
             holderpos = (next_pos[0],next_pos[1])
             finalPath.append(holderpos)
         else:
-            pathMoves.append("Forward")
+            if abs(next_pos[0] - curr_pos[0]) >= 2:
+                pathMoves.append("Bash")
+                final_score += 3
+                holderpos = (next_pos[0], next_pos[1])
+                finalPath.append(holderpos)
+            else:
+                pathMoves.append("Forward")
     return (finalPath,pathMoves,100-final_score)
 
 
@@ -174,7 +180,7 @@ def a_star(mapdata, start, goal, heuristicOption):
 
     # Create the frontiers
     frontierStuff = frontier.get_queue()
-    frontierCells = []
+    frontierCells = [] # is in x,y format
     for priorityTuple in frontierStuff:
         gridTuple = priorityTuple[1]
         frontierCells.append([gridTuple[0], gridTuple[1]])
@@ -265,7 +271,7 @@ def a_star(mapdata, start, goal, heuristicOption):
         #This is the code for the BASH functionality, so its only going straight I believe
         for next in neighbors_of_4_can_bash(mapdata,current[0], current[1]):
 
-            # Takes care of when the data = G or S
+            # Takes care of when the data = G or S1
             if mapdata[next[1]][next[0]] > 10:
                 cell_cost = 3 # Cost of the next cell plus the cell it just jumped over
             else:
@@ -358,9 +364,11 @@ def plan_path(mapdata, heuristicOption):
     start_y,start_x = np.where(mapdata==(ord('S')-48))
     # start = (1,2)
     start = (int(start_x),int(start_y))
+    print("Start : %s, %s" %(start[0],start[1]))
     goal_y, goal_x = np.where(mapdata==(ord('G')-48))
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
+    print("Goal : %s, %s" %(goal[0],goal[1]))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path,mapdata)
 
