@@ -211,7 +211,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
 
             try:
                 turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
@@ -262,7 +262,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                 heading[next] = nextHeading
 
 
-        #This is the code for the BASH functionality, so its only going straight I believe
+        #This is the code for the BASH functionality
         for next in neighbors_of_4_can_bash(mapdata,current[0], current[1]):
 
             # Takes care of when the data = G or S1
@@ -355,10 +355,10 @@ def plan_path(mapdata, heuristicOption):
     ## Request the map
     ## In case of error, return an empty path
     ## Execute A*
-    start_y,start_x = np.where(mapdata==(ord('S')-48))
+    start_y,start_x = np.where(mapdata==35)
     start = (int(start_x),int(start_y))
     print("Start : %s, %s" %(start[0],start[1]))
-    goal_y, goal_x = np.where(mapdata==(ord('G')-48))
+    goal_y, goal_x = np.where(mapdata==23)
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
     print("Goal : %s, %s" %(goal[0],goal[1]))
@@ -368,5 +368,6 @@ def plan_path(mapdata, heuristicOption):
     aStarData[0] = finalPath[0]# Path taken
     aStarData[3] = finalPath[1]# Actions Taken
     aStarData[2] = finalPath[2]# Total Score
+
     ## Return a Path message
     return aStarData
