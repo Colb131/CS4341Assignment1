@@ -289,9 +289,9 @@ def a_star(mapdata, start, goal, heuristicOption):
                 cell_cost = 3 + mapdata[next[1]][next[0]]
 
             #Still have to turn to get in position to bash
-            if next[1]/2-current[1] != 0:
+            if next[1]-current[1] != 0:
                 nextHeading = next[1] - current[1] + 2
-            if next[0]/2-current[0] != 0:
+            if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
             #print("%s Bash Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
             turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
