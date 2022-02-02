@@ -99,6 +99,8 @@ def cleanup(path,mapdata):
     pathMoves = []
     prev_heading = 1
     final_score = 0
+    data_curr = 0
+    data_next = 0
     # For all nodes in the path, from the start to the finish,
     # check the current node and the next node to see what type of
     # move it is, if its valid, what actions were taken to reach it
@@ -107,33 +109,48 @@ def cleanup(path,mapdata):
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
-        if mapdata[curr_pos[1]][curr_pos[0]] < 10:
+        data_curr = mapdata[curr_pos[1]][curr_pos[0]]
+        if data_curr < 10:
             #Add the cost of the current cell
             final_score += mapdata[curr_pos[1]][curr_pos[0]]
-        if mapdata[curr_pos[1]][curr_pos[0]] == 'G':
-            print("Zhoinks scoob, Why the frickity frack are you here?")
+        else: #S and G have a complexity of 1
+            data_curr = 1
+            if i > 0:
+                final_score += data_curr
 
         #Turning, both adding the cost of the turn and adding the actions
-        if next_pos[1] / 2 - curr_pos[1] != 0:
-            nextHeading = next_pos[1] - curr_pos[1] + 2
-        if next_pos[0] / 2 - curr_pos[0] != 0:
-            nextHeading = (((next_pos[0] - curr_pos[0]) + 3) % 3) * 2
+        if next_pos[1] - curr_pos[1] != 0:
+            if abs(next_pos[1] - curr_pos[1]) >= 2:
+                nextHeading = (next_pos[1]-curr_pos[1])/2+2
+            else:
+                nextHeading = next_pos[1] - curr_pos[1] + 2
+        if next_pos[0] - curr_pos[0] != 0:
+            if abs(next_pos[0] - curr_pos[0]) >= 2:
+                (((next_pos[0] - curr_pos[0])/2 + 3) % 3) * 2
+            else:
+                nextHeading = (((next_pos[0] - curr_pos[0]) + 3) % 3) * 2
         turn = nextHeading - prev_heading
         if turn == -3:
             turn = 1
         if turn == 3:
             turn = -1
-        if turn == 1 and mapdata[curr_pos[1]][curr_pos[0]] < 10:
-            final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
+        if turn == 1:
+            final_score += math.ceil(float(data_curr / 2))
             pathMoves.append("Right")
-        if turn == 2 or turn == -2 and mapdata[curr_pos[1]][curr_pos[0]] < 10: # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
-            final_score += mapdata[curr_pos[1]][curr_pos[0]]
+            holderpos = (curr_pos[0], curr_pos[1])
+            finalPath.append(holderpos)
+        if turn == 2 or turn == -2: # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
+            final_score += math.ceil(float(data_curr / 2)) * 2
             pathMoves.append("Right")
             pathMoves.append("Right")
-        if turn == -1 and mapdata[curr_pos[1]][curr_pos[0]] < 10:
-            final_score += math.ceil(float(mapdata[curr_pos[1]][curr_pos[0]] / 2))
+            holderpos = (curr_pos[0], curr_pos[1])
+            finalPath.append(holderpos)
+            finalPath.append(holderpos)
+        if turn == -1:
+            final_score += math.ceil(float(data_curr / 2))
             pathMoves.append("Left")
-
+            holderpos = (curr_pos[0], curr_pos[1])
+            finalPath.append(holderpos)
         if abs(next_pos[0]-curr_pos[0]) >= 2:
             pathMoves.append("Bash")
             final_score += 3
@@ -149,6 +166,8 @@ def cleanup(path,mapdata):
                 pathMoves.append("Forward")
             else:
                 pathMoves.append("Forward")
+    final_score += 1
+    finalPath.append(path[len(path) - 1])
     return (finalPath,pathMoves,100-final_score)
 
 
