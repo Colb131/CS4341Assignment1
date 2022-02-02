@@ -21,8 +21,8 @@ if __name__ == '__main__':
     numCol = 10
     numRow = 5
 
-    totalNodeCost = [0] * 6
-    totalScore = [0] * 6
+    totalNodeCost = 0
+    totalScore = 0
 
     print("Running ", iterations, " iterations of board size (", numCol, ",", numRow, ")")
 
@@ -41,19 +41,33 @@ if __name__ == '__main__':
         board = np.array(newBoard)
         print(board)
 
-        for i in range(1, 7):
-            aStarData = pathPlanner.plan_path(board, i)
+        heuristicOption = int(input("Please enter the desired heuristic: "))
 
-            path = aStarData[0]
-            totalNodeCost[i - 1] += aStarData[1]
-            totalScore[i - 1] += aStarData[2]
+        aStarData = pathPlanner.plan_path(board, heuristicOption)
 
-            if iterations == 1:
-                print(len(path))
+        path = aStarData[0]
+        totalNodeCost += aStarData[1]
+        totalScore += aStarData[2]
+
+        if iterations == 1:
+            print(len(path))
+
+        # for i in range(1, 7):
+        #     aStarData = pathPlanner.plan_path(board, i)
+        #
+        #     path = aStarData[0]
+        #     totalNodeCost[i - 1] += aStarData[1]
+        #     totalScore[i - 1] += aStarData[2]
+        #
+        #     if iterations == 1:
+        #         print(len(path))
         # process = psutil.Process(os.getpid())
         # print(psutil.virtual_memory()[2])
         # print(process.memory_info().rss / (1024 * 1024), "MB")
-    for i in range(1, 7):  # Print our results
-        print("Heuristic #", i, ": ", "Average Total Nodes Expanded: ", totalNodeCost[i - 1] / iterations,
-              " Average Score: ",
-              totalScore[i - 1] / iterations)
+    print("Heuristic #", heuristicOption, ": ", "Average Total Nodes Expanded: ", totalNodeCost / iterations,
+            " Average Score: ",
+               totalScore / iterations)
+    # for i in range(1, 7):  # Print our results
+    #     print("Heuristic #", i, ": ", "Average Total Nodes Expanded: ", totalNodeCost[i - 1] / iterations,
+    #           " Average Score: ",
+    #           totalScore[i - 1] / iterations)
