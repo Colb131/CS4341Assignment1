@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import math
+import random
 
+import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
@@ -57,16 +59,8 @@ def neighbors_of_4(mapdata, x, y):
 
     addy = [1, -1, 0, 0]
     addx = [0, 0, 1, -1]
-    cols = len(mapdata[0])
-    rows = len(mapdata)
-    for i in range(len(addx)):
-        if cols != y + addy[i] and \
-                rows != x + addx[i] and \
-                -1 != x + addx[i] and \
-                -1 != y + addy[i]:
-            neighbors.append((x + addx[i], y + addy[i]))
 
-    return neighbors
+    return getNeighbors(mapdata, addy, addx, x, y)
 
 def neighbors_of_4_can_bash(mapdata, x, y):
     """
@@ -78,21 +72,24 @@ def neighbors_of_4_can_bash(mapdata, x, y):
     """
 
     ### REQUIRED CREDIT
-    neighbors = []
 
     addy = [2, -2, 0, 0]
     addx = [0, 0, 2, -2]
-    cols = len(mapdata[0])
-    rows = len(mapdata)
+
+    return getNeighbors(mapdata, addy, addx, x, y)
+
+
+def getNeighbors(mapdata, addy, addx, x, y):
+    neighbors = []
+    cols = len(mapdata)
+    rows = len(mapdata[0])
     for i in range(len(addx)):
         if cols > y + addy[i] and \
                 rows > x + addx[i] and \
                 0 <= x + addx[i] and \
                 0 <= y + addy[i]:
             neighbors.append((x + addx[i], y + addy[i]))
-
     return neighbors
-
 
 def cleanup(path,mapdata):
     """Cleans up the given path and returns the final path, actions taken, and final score
@@ -110,7 +107,7 @@ def cleanup(path,mapdata):
         finalPath.append(path[i])
         curr_pos = path[i]
         next_pos = path[i+1]
-        if mapdata[curr_pos[1]][curr_pos[0]] != 'S':
+        if mapdata[curr_pos[1]][curr_pos[0]] < 10:
             #Add the cost of the current cell
             final_score += mapdata[curr_pos[1]][curr_pos[0]]
         if mapdata[curr_pos[1]][curr_pos[0]] == 'G':
@@ -147,7 +144,13 @@ def cleanup(path,mapdata):
             holderpos = (next_pos[0],next_pos[1])
             finalPath.append(holderpos)
         else:
-            pathMoves.append("Forward")
+            if abs(next_pos[0] - curr_pos[0]) >= 2:
+                pathMoves.append("Bash")
+                final_score += 3
+                holderpos = (next_pos[0], next_pos[1])
+                finalPath.append(holderpos)
+            else:
+                pathMoves.append("Forward")
     return (finalPath,pathMoves,100-final_score)
 
 
@@ -172,7 +175,7 @@ def a_star(mapdata, start, goal, heuristicOption):
 
     # Create the frontiers
     frontierStuff = frontier.get_queue()
-    frontierCells = []
+    frontierCells = [] # is in x,y format
     for priorityTuple in frontierStuff:
         gridTuple = priorityTuple[1]
         frontierCells.append([gridTuple[0], gridTuple[1]])
@@ -197,7 +200,7 @@ def a_star(mapdata, start, goal, heuristicOption):
         #Add viable children to frontier
         #print("Currently: (%d,%d)" % (current[0], current[1]))
         for next in neighbors_of_4(mapdata,current[0], current[1]):
-            numNodes += 1
+
             # Takes care of when the data = G or S
             if mapdata[next[1]][next[0]] > 10:
                 cell_cost = 0  # Cost of the next cell plus the cell it just jumped over
@@ -208,14 +211,13 @@ def a_star(mapdata, start, goal, heuristicOption):
                 nextHeading = next[1] - current[1] + 2
             if next[0]-current[0] != 0:
                 nextHeading = (((next[0] - current[0])+3)%3)*2
-            #print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
+            print("%s Cost: %d Curr Heading = %d Next Heading = %d" % (next, mapdata[next[1]][next[0]], heading[current], nextHeading))
 
             try:
                 turn_cost = (4+nextHeading-heading[current])%4 * int(math.ceil(float(mapdata[next[1]][next[0]])))
             except IndexError:
                 turn_cost = math.inf
 
-            #TODO: Heuristics go here:::
             verticleDistance = abs(goal[1]-next[1])
             horizontalDistance = abs(goal[0]-next[0])
 
@@ -231,7 +233,7 @@ def a_star(mapdata, start, goal, heuristicOption):
             elif heuristicOption == 4: # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5: # Heuristic that dominates 4 (the actual linear distance)
-                heuristic = 2 * euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6: # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
@@ -243,7 +245,7 @@ def a_star(mapdata, start, goal, heuristicOption):
                     print(error)
 
             if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
-
+                numNodes+=1
                 cost_so_far[next] = cost
                 priority = cost + heuristic
                 frontier.put(next, priority)
@@ -262,8 +264,8 @@ def a_star(mapdata, start, goal, heuristicOption):
 
         #This is the code for the BASH functionality, so its only going straight I believe
         for next in neighbors_of_4_can_bash(mapdata,current[0], current[1]):
-            numNodes += 1
-            # Takes care of when the data = G or S
+
+            # Takes care of when the data = G or S1
             if mapdata[next[1]][next[0]] > 10:
                 cell_cost = 3 # Cost of the next cell plus the cell it just jumped over
             else:
@@ -292,7 +294,7 @@ def a_star(mapdata, start, goal, heuristicOption):
             elif heuristicOption == 4:  # Heuristic where both are added together
                 heuristic = horizontalDistance + verticleDistance
             elif heuristicOption == 5:  # Heuristic that dominates 4 (the actual linear distance)
-                heuristic = 2 * euclidean_distance(goal[0], goal[1], next[0], next[1])
+                heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
             else:
@@ -301,7 +303,6 @@ def a_star(mapdata, start, goal, heuristicOption):
                     raise Exception('ERROR: NO VALID HEURISTIC!!!!!')
                 except Exception as error:
                     heuristic = 0
-
                     print(error)
 
             if next not in cost_so_far or cost + heuristic < cost_so_far[next]:
@@ -355,11 +356,12 @@ def plan_path(mapdata, heuristicOption):
     ## In case of error, return an empty path
     ## Execute A*
     start_y,start_x = np.where(mapdata==(ord('S')-48))
-    # start = (1,2)
     start = (int(start_x),int(start_y))
+    print("Start : %s, %s" %(start[0],start[1]))
     goal_y, goal_x = np.where(mapdata==(ord('G')-48))
     # goal = (3,4)
     goal = (int(goal_x),int(goal_y))
+    print("Goal : %s, %s" %(goal[0],goal[1]))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path,mapdata)
 
