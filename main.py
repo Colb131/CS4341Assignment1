@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
        #board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
         if iterations == 1:
-            #print(board)
+
 
 
 
@@ -60,9 +60,10 @@ if __name__ == '__main__':
             movesTaken = aStarData[3]
 
             # print("error in iteration ", x)
-
+            print("")
             if iterations == 1:
-                print(" Path taken: ", path)
+
+                print("Path taken: ", path)
                 print(movesTaken)
 
             #process = psutil.Process(os.getpid())
