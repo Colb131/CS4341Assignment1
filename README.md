@@ -1,7 +1,7 @@
 # CS4341Assignment1
 Group 24
 Matthew Hendrickson
-
+Chandler Garcia
 
 This program was created with Python 3.8. It has not been tested nor expected to work with any version but Python 3.8
 
