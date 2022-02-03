@@ -14,7 +14,9 @@ https://docs.google.com/document/d/1t0JdFXy_IeFbpzEG60Gh8-B82tD0tSqDYynyXf1IOAU/
 
 Simply put the desired text file into the CS4341Assignment1 folder 
 
-In terminal, run python3 and execute "main.py" to start the program 
+In terminal, run python3 and execute "main.py" to start the program.
+
+You can also choose to run "randomGen.py" to run several iterations of randomly generated boards of various sizes.
 
 Enter the file's name (without quotes) ex: "input.txt"
 
