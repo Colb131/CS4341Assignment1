@@ -2,10 +2,14 @@
 
 import math
 import random
+import csv
 
 import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
+
+fields = ["Adjacent Squares", "Goal Adjacent Squares", "Location", "Facing Direction", "Cost"]
+filename = "results.csv"
 
 aStarData = [None] * 4
 def grid_to_index(mapdata, x, y):
