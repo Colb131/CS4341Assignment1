@@ -8,7 +8,6 @@ aStarData = [None] * 4
 
 
 def reader(filename):
-
     data = np.loadtxt(filename, delimiter="\t", dtype=str)
     data = np.transpose(data)
     print(np.fliplr(np.rot90(np.array(data), 3)))
@@ -23,6 +22,19 @@ def reader(filename):
     board = np.fliplr(np.rot90(np.array(newBoard), 3))
 
     return board
+
+
+def write_to_csv(journey_storage_object, input_filename):
+    board_copy = reader(input_filename)
+    journey_storage_object[3].reverse()
+    journey_storage_object[0].reverse()
+    backtrack_array = [journey_storage_object[2]]
+    goal_point = journey_storage_object[0][0]
+    # TODO write x dist = 0 y dist = 0 cost = final_cost
+    for i in range(journey_storage_object[3]):
+
+        pass
+    # TODO make method that backtracks and writes to csv per loop
 
 
 # Press the green button in the gutter to run the script.
@@ -57,6 +69,7 @@ if __name__ == '__main__':
             # process = psutil.Process(os.getpid())
             # print(psutil.virtual_memory()[2])
             # print(process.memory_info().rss / (1024 * 1024), "MB")
+            write_to_csv(aStarData, filename)
         # Print our results
         print("Heuristic #", heuristic, ": ", "Total Nodes Expanded: ", totalNodeCost[heuristic],
               " Score: ",

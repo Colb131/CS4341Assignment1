@@ -222,7 +222,7 @@ def a_star(mapdata, start, goal, heuristicOption):
         ydist = abs(goal[1] - current[1])
 
         rows.append([heading, xdist, ydist, cost])
-
+        print(f"heading:{heading}, xdist:{xdist}, ydist:{ydist}, cost: {cost}\n")
         # print(current)
         # update the frontiers visited just to let us see visually if we want
         expandedCells.append([current[0], current[1]])
