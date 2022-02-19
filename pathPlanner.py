@@ -8,10 +8,7 @@ import generateRandomBoard
 from priority_queue import PriorityQueue
 import numpy as np
 
-fields = ["Facing Direction", "x Distance", "Y Distance", "Cost"]
-rows = [[]]
 
-filename = "results.csv"
 
 aStarData = [None] * 4
 
@@ -218,11 +215,7 @@ def a_star(mapdata, start, goal, heuristicOption):
     while not frontier.empty():
         current = frontier.get()
 
-        xdist = abs(goal[0] - current[0])
-        ydist = abs(goal[1] - current[1])
 
-        rows.append([heading, xdist, ydist, cost])
-        print(f"heading:{heading}, xdist:{xdist}, ydist:{ydist}, cost: {cost}\n")
         # print(current)
         # update the frontiers visited just to let us see visually if we want
         expandedCells.append([current[0], current[1]])
