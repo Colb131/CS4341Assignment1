@@ -3,6 +3,11 @@ from _csv import reader
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+"""
+code taken from https://realpython.com/linear-regression-in-python/
+"""
+
+
 def perform_regression():
     read_obj = open("results.csv", 'r')
     csv_reader = reader(read_obj)

@@ -55,36 +55,41 @@ def getDirection(moveType, currentDirection):
         pass
     elif moveType == "Right":
         if currentDirection == 1:
-            direction = -2
-        elif currentDirection == -1:
             direction = 2
         elif currentDirection == 2:
+            direction = 3
+        elif currentDirection == 0:
             direction = 1
-        elif currentDirection == -2:
-            direction = -1
+        elif currentDirection == 3:
+            direction = 0
 
     elif moveType == "Left":
         if currentDirection == 1:
+            direction = 0
+        elif currentDirection == 3:
             direction = 2
-        elif currentDirection == -1:
-            direction = -2
         elif currentDirection == 2:
-            direction = -1
-        elif currentDirection == -2:
             direction = 1
+        elif currentDirection == 0:
+            direction = 3
     return direction
 
 
-def write_to_csv(journey_storage_object, input_filename):
+def write_to_csv(journey_storage_object, board_object):
     f = open("results.csv", 'a')
-    board_copy = reader(input_filename)
+    board_copy = []
+    for i in board_object:
+        line = []
+        for j in i:
+            line.append(j)
+        board_copy.append(line)
     # journey_storage_object[3].reverse()
     # journey_storage_object[0].reverse()
     # backtrack_array = [journey_storage_object[2]]
     path = journey_storage_object[0]
     goal_point = journey_storage_object[0][-1]
     # TODO write x dist = 0 y dist = 0 cost = final_cost
-    direction = 2
+    direction = 0
     total_cost_minus = 100 - journey_storage_object[2]
     for i in range(0, len(path) - 1):
         xdist = abs(goal_point[0] - path[i][0])
@@ -108,8 +113,8 @@ if __name__ == '__main__':
     # numCol = 10
     # numRow = 10
 
-    totalNodeCost = [0] * 7
-    totalScore = [0] * 7
+    totalNodeCost = [0] * 8
+    totalScore = [0] * 8
 
     filepath, filename, heuristic = sys.argv
     heuristic = int(heuristic)
@@ -133,7 +138,7 @@ if __name__ == '__main__':
             # process = psutil.Process(os.getpid())
             # print(psutil.virtual_memory()[2])
             # print(process.memory_info().rss / (1024 * 1024), "MB")
-            write_to_csv(aStarData, filename)
+            write_to_csv(aStarData, board)
         # Print our results
         print("Heuristic #", heuristic, ": ", "Total Nodes Expanded: ", totalNodeCost[heuristic],
               " Score: ",
