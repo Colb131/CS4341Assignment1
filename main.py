@@ -99,7 +99,6 @@ def write_to_csv(journey_storage_object, input_filename):
     for element in rows:
         appended_string = f"{element[0]}, {element[1]}, {element[2]}, {element[3]}\n"
         f.write(appended_string)
-        pass
 
 
 # Press the green button in the gutter to run the script.
