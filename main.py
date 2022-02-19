@@ -9,9 +9,10 @@ import sys
 aStarData = [None] * 4
 
 fields = ["Facing Direction", "x Distance", "Y Distance", "Cost"]
-rows = [[]]
+rows = []
 
 filename = "results.csv"
+
 
 def reader(filename):
     data = np.loadtxt(filename, delimiter="\t", dtype=str)
@@ -35,15 +36,18 @@ def getCost(current, next, board, moveType):
     if moveType == "Bash":
         cost = 3
     elif moveType == "Forward":
-        cost = math.ceil(board[next[0]][next[1]])
+        cost = math.ceil(board[next[1]][next[0]])
     elif moveType == "Right":
-        cost = math.ceil(board[current[0]][current[1]] * .5)
+        cost = math.ceil(board[current[1]][current[0]] * .5)
     elif moveType == "Left":
-        cost = math.ceil(board[current[0]][current[1]] * .5)
+        cost = math.ceil(board[current[1]][current[0]] * .5)
+
+    if cost == 23 or cost == 18:  # turns goal into a terrain complexity of 1 and makes the turn on start = 1
+        cost = 1
     return cost
 
 
-def getDirection(current, next, moveType, currentDirection):
+def getDirection(moveType, currentDirection):
     direction = currentDirection
     if moveType == "Bash":
         pass
@@ -72,6 +76,7 @@ def getDirection(current, next, moveType, currentDirection):
 
 
 def write_to_csv(journey_storage_object, input_filename):
+    f = open("results.csv", 'a')
     board_copy = reader(input_filename)
     # journey_storage_object[3].reverse()
     # journey_storage_object[0].reverse()
@@ -79,20 +84,22 @@ def write_to_csv(journey_storage_object, input_filename):
     path = journey_storage_object[0]
     goal_point = journey_storage_object[0][-1]
     # TODO write x dist = 0 y dist = 0 cost = final_cost
-    startDirection = 2
+    direction = 2
+    total_cost_minus = 100 - journey_storage_object[2]
     for i in range(0, len(path) - 1):
         xdist = abs(goal_point[0] - path[i][0])
 
         ydist = abs(goal_point[1] - path[i][1])
 
         cost = getCost(path[i], path[i + 1], board_copy, journey_storage_object[3][i])
-        direction = getDirection(path[i], path[i + 1], journey_storage_object[3][i], 2)
+        direction = getDirection(journey_storage_object[3][i], direction)
         print("Cost", cost, "xdist, ydist", xdist, ydist, "Direction", direction)
-        rows.append([direction, xdist, ydist, cost])
-        # print(f"heading:{heading}, xdist:{xdist}, ydist:{ydist}, cost: {cost}\n")
-
+        rows.append([direction, xdist, ydist, total_cost_minus])
+        total_cost_minus = total_cost_minus - cost
+    for element in rows:
+        appended_string = f"{element[0]}, {element[1]}, {element[2]}, {element[3]}\n"
+        f.write(appended_string)
         pass
-    # TODO make method that backtracks and writes to csv per loop
 
 
 # Press the green button in the gutter to run the script.
