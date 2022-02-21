@@ -32,7 +32,6 @@ def reader():
 
     board = np.fliplr(np.rot90(np.array(newBoard), 3))
 
-
     return board
 
 def getCost(current, next, board, moveType, totalCost):
@@ -147,6 +146,13 @@ def run(runTime):
 
 
 
+    totalNodeCost = [0] * 8
+    totalScore = [0] * 8
+    for _ in range(40):
+        for x in range(iterations):
+            if x != 5:
+                board = generateRandomBoard.getBoard(numCol, numRow)  # Generating a random game board
+                aStarData = pathPlanner.plan_path(board, x + 5)
             totalNodeCost = [0] * 7
             totalScore = [0] * 7
 
@@ -158,7 +164,15 @@ def run(runTime):
             if( len(aStarData[0]) == len(aStarData[4])):
                 write_to_csv(aStarData, board)
 
+                path = aStarData[0]
+                totalNodeCost[x + 1] += aStarData[1]
+                totalScore[x + 1] += aStarData[2]
+                movesTaken = aStarData[3]
 
+                # print("error in iteration ", x)
+                print("\nHeuristic %d" % (x + 1))
+                print("Path taken: ", path)
+                print("Total Moves made: ", movesTaken)
         rows = pd.DataFrame(rows, columns=fields)
         rows.to_csv('results2.csv', index=False)
 
@@ -202,3 +216,11 @@ if __name__ == '__main__':
     #     # Print our results
     #     print("Heuristic #", x+1, ": ", "Total Nodes Expanded: ", totalNodeCost[x+1], " Score: ",
     #           totalScore[x+1])
+                # process = psutil.Process(os.getpid())
+                # print(psutil.virtual_memory()[2])
+                # print(process.memory_info().rss / (1024 * 1024), "MB")
+                # Print our results
+                print("Heuristic #", x + 1, ": ", "Total Nodes Expanded: ", totalNodeCost[x + 1], " Score: ",
+                      totalScore[x + 1])
+
+                write_to_csv(aStarData, board)

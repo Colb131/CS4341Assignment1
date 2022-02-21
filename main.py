@@ -8,6 +8,11 @@ import sys
 
 aStarData = [None] * 4
 
+fields = ["Facing Direction", "x Distance", "Y Distance", "Cost"]
+rows = []
+
+filename = "results.csv"
+
 
 def reader(filename):
     data = np.loadtxt(filename, delimiter="\t", dtype=str)
@@ -31,64 +36,74 @@ def getCost(current, next, board, moveType):
     if moveType == "Bash":
         cost = 3
     elif moveType == "Forward":
-        cost = math.ceil(board[next[0]][next[1]])
+        cost = math.ceil(board[next[1]][next[0]])
     elif moveType == "Right":
-        cost = math.ceil(board[current[0]][current[1]] * .5)
+        cost = math.ceil(board[current[1]][current[0]] * .5)
     elif moveType == "Left":
-        cost = math.ceil(board[current[0]][current[1]] * .5)
+        cost = math.ceil(board[current[1]][current[0]] * .5)
+
+    if cost == 23 or cost == 18:  # turns goal into a terrain complexity of 1 and makes the turn on start = 1
+        cost = 1
     return cost
 
 
-def getDirection(current, next, moveType, currentDirection):
+def getDirection(moveType, currentDirection):
     direction = currentDirection
     if moveType == "Bash":
         pass
     elif moveType == "Forward":
         pass
     elif moveType == "Right":
-        if currentDirection == 1:
-            direction = -2
-        elif currentDirection == -1:
+        if currentDirection == 2:
+            direction = 3
+        elif currentDirection == 3:
+            direction = 4
+        elif currentDirection == 1:
             direction = 2
-        elif currentDirection == 2:
+        elif currentDirection == 4:
             direction = 1
-        elif currentDirection == -2:
-            direction = -1
 
     elif moveType == "Left":
-        if currentDirection == 1:
-            direction = 2
-        elif currentDirection == -1:
-            direction = -2
-        elif currentDirection == 2:
-            direction = -1
-        elif currentDirection == -2:
+        if currentDirection == 2:
             direction = 1
+        elif currentDirection == 4:
+            direction = 3
+        elif currentDirection == 3:
+            direction = 2
+        elif currentDirection == 1:
+            direction = 4
     return direction
 
 
-def write_to_csv(journey_storage_object, input_filename):
-    board_copy = reader(input_filename)
+def write_to_csv(journey_storage_object, board_object):
+    f = open("results.csv", 'a')
+    board_copy = []
+    for i in board_object:
+        line = []
+        for j in i:
+            line.append(j)
+        board_copy.append(line)
     # journey_storage_object[3].reverse()
     # journey_storage_object[0].reverse()
     # backtrack_array = [journey_storage_object[2]]
     path = journey_storage_object[0]
     goal_point = journey_storage_object[0][-1]
     # TODO write x dist = 0 y dist = 0 cost = final_cost
-    startDirection = 2
+    direction = 1
+    total_cost_minus = 100 - journey_storage_object[2]
     for i in range(0, len(path) - 1):
         xdist = abs(goal_point[0] - path[i][0])
 
         ydist = abs(goal_point[1] - path[i][1])
 
         cost = getCost(path[i], path[i + 1], board_copy, journey_storage_object[3][i])
-        direction = getDirection(path[i], path[i + 1], journey_storage_object[3][i], 2)
+        direction = getDirection(journey_storage_object[3][i], direction)
         print("Cost", cost, "xdist, ydist", xdist, ydist, "Direction", direction)
-        rows.append([direction, xdist, ydist, cost])
-        # print(f"heading:{heading}, xdist:{xdist}, ydist:{ydist}, cost: {cost}\n")
-
-        pass
-    # TODO make method that backtracks and writes to csv per loop
+        rows.append([direction, xdist, ydist, total_cost_minus])
+        total_cost_minus = total_cost_minus - cost
+    for element in rows:
+        appended_string = f"{element[0]}, {element[1]}, {element[2]}, {element[3]}\n"
+        f.write(appended_string)
 
 
 # Press the green button in the gutter to run the script.
@@ -98,8 +113,8 @@ if __name__ == '__main__':
     # numCol = 10
     # numRow = 10
 
-    totalNodeCost = [0] * 7
-    totalScore = [0] * 7
+    totalNodeCost = [0] * 8
+    totalScore = [0] * 8
 
     filepath, filename, heuristic = sys.argv
     heuristic = int(heuristic)
@@ -123,7 +138,7 @@ if __name__ == '__main__':
             # process = psutil.Process(os.getpid())
             # print(psutil.virtual_memory()[2])
             # print(process.memory_info().rss / (1024 * 1024), "MB")
-            #write_to_csv(aStarData, filename)
+            write_to_csv(aStarData, board)
         # Print our results
         print("Heuristic #", heuristic, ": ", "Total Nodes Expanded: ", totalNodeCost[heuristic],
               " Score: ",

@@ -170,7 +170,7 @@ def cleanup(path, mapdata):
             final_score += 3
             listScore.append(3)
             holderpos = (
-            int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]), int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
+                int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]), int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
             finalPath.append(holderpos)
             pathMoves.append("Forward")
         else:
@@ -179,7 +179,8 @@ def cleanup(path, mapdata):
                 final_score += 3
                 listScore.append(3)
                 holderpos = (
-                int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]), int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
+                    int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]),
+                    int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
                 finalPath.append(holderpos)
                 pathMoves.append("Forward")
             else:
@@ -224,7 +225,6 @@ def a_star(mapdata, start, goal, heuristicOption):
     while not frontier.empty():
         current = frontier.get()
 
-
         # print(current)
         # update the frontiers visited just to let us see visually if we want
         expandedCells.append([current[0], current[1]])
@@ -260,7 +260,7 @@ def a_star(mapdata, start, goal, heuristicOption):
 
             cost = turn_cost + cell_cost + cost_so_far[current]
 
-            # print(horizontalDistance, verticleDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
+            # print(horizontalDistance, verticalDistance, euclidean_distance(goal[0], next[0], goal[1], next[1]))
             if heuristicOption == 1:  # No heuristic
                 heuristic = 0
             elif heuristicOption == 2:  # Heuristic based upon the whichever is lower
@@ -273,6 +273,16 @@ def a_star(mapdata, start, goal, heuristicOption):
                 heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
+            elif heuristicOption == 7:  # new heuristic value from machine learning
+                f = open("learned_values.txt", 'r')
+                coefficients_n_intercept = []
+                lines = f.readlines()
+                for element in lines:
+                    coefficients_n_intercept.append(float(element.strip()))
+                heuristic = (heading[current] * coefficients_n_intercept[0] + horizontalDistance *
+                             coefficients_n_intercept[1] + verticleDistance * coefficients_n_intercept[2] +
+                             coefficients_n_intercept[3])
+                f.close()
             else:
                 # If no valid heuristic is applied, error
                 try:
@@ -333,6 +343,16 @@ def a_star(mapdata, start, goal, heuristicOption):
                 heuristic = euclidean_distance(goal[0], goal[1], next[0], next[1])
             elif heuristicOption == 6:  # Heuristic #5 multiplied by 3
                 heuristic = (3 * euclidean_distance(goal[0], goal[1], next[0], next[1]))
+            elif heuristicOption == 7:  # new heuristic value from machine learning
+                f = open("learned_values.txt", 'r')
+                coefficients_n_intercept = []
+                lines = f.readlines()
+                for element in lines:
+                    coefficients_n_intercept.append(float(element.strip()))
+                heuristic = (heading[current] * coefficients_n_intercept[0] + horizontalDistance *
+                             coefficients_n_intercept[1] + verticleDistance * coefficients_n_intercept[2] +
+                             coefficients_n_intercept[3])
+                f.close()
             else:
                 # If no valid heuristic is applied, error
                 try:
@@ -399,7 +419,6 @@ def plan_path(mapdata, heuristicOption):
     print("Goal : %s, %s" % (goal[0], goal[1]))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path, mapdata)
-    print(finalPath)
 
     aStarData[0] = finalPath[0]  # Path taken
     aStarData[3] = finalPath[1]  # Actions Taken
