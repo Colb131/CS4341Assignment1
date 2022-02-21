@@ -2,6 +2,7 @@ import numpy as np
 
 import generateRandomBoard
 import pathPlanner
+from linear_regression import perform_regression
 from main import write_to_csv
 
 aStarData = [None] * 4
@@ -61,4 +62,5 @@ if __name__ == '__main__':
                       totalScore[x + 1])
 
                 write_to_csv(aStarData, board)
-                
+
+    perform_regression()
