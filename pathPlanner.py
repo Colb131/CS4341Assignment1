@@ -412,11 +412,11 @@ def plan_path(mapdata, heuristicOption):
     ## Execute A*
     start_y, start_x = np.where(mapdata == 35)
     start = (int(start_x), int(start_y))
-    print("Start : %s, %s" % (start[0], start[1]))
+    #print("Start : %s, %s" % (start[0], start[1]))
     goal_y, goal_x = np.where(mapdata == 23)
     # goal = (3,4)
     goal = (int(goal_x), int(goal_y))
-    print("Goal : %s, %s" % (goal[0], goal[1]))
+    #print("Goal : %s, %s" % (goal[0], goal[1]))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path, mapdata)
 

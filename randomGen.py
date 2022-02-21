@@ -1,4 +1,5 @@
 import math
+from statistics import linear_regression
 from time import time
 import pandas as pd
 import main
@@ -6,6 +7,8 @@ import pathPlanner
 import generateRandomBoard
 import csv
 import numpy as np
+
+from linear_regression import perform_regression
 
 aStarData = [None] * 4
 
@@ -90,7 +93,7 @@ def getDirection(moveType, currentDirection):
 def write_to_csv(journey_storage_object, gameboard):
     global rows
     board_copy = gameboard
-    print(board_copy)
+    #print(board_copy)
     # journey_storage_object[3].reverse()
     # journey_storage_object[0].reverse()
     # backtrack_array = [journey_storage_object[2]]
@@ -104,11 +107,11 @@ def write_to_csv(journey_storage_object, gameboard):
     #add start
     xd = abs(goal_point[0] - start_point[0])
     yd = abs(goal_point[1] - start_point[1])
-    print("Moves Taken", journey_storage_object[3])
-    print(len(path), len(journey_storage_object[4]))
-    print(path)
-    print("Cost", orginalCost, "xdist, ydist", xd, yd, "Direction", 1)
-
+    #print("Moves Taken", journey_storage_object[3])
+   # print(len(path), len(journey_storage_object[4]))
+    #print(path)
+    #print("Cost", orginalCost, "xdist, ydist", xd, yd, "Direction", 1)
+    direction = 1
     rows.append([1, xd, yd, orginalCost])
     for i in range(1, len(journey_storage_object[3])):
         xdist = abs(goal_point[0] - path[i+1][0])
@@ -117,9 +120,9 @@ def write_to_csv(journey_storage_object, gameboard):
 
         cost = orginalCost - journey_storage_object[4][i]
         orginalCost = cost
-        direction = getDirection(journey_storage_object[3][i], path[i-1])
+        direction = getDirection(journey_storage_object[3][i], direction)
 
-        print("Cost", cost, "xdist, ydist", xdist, ydist, "Direction", direction)
+        #print("Cost", cost, "xdist, ydist", xdist, ydist, "Direction", direction)
         rows.append([direction, xdist, ydist, cost])
        # rows.append()
         if cost == 0:
@@ -147,7 +150,7 @@ def run(runTime):
             aStarData = pathPlanner.plan_path(board, 5)
 
 
-            print("Starting Cost", aStarData[2])
+
             if( len(aStarData[0]) == len(aStarData[4])):
                 write_to_csv(aStarData, board)
 
@@ -171,7 +174,42 @@ if __name__ == '__main__':
     #
     # write_to_csv(aStarData, board).run(5)
 
-    run(2)
+    run(20)
+    perform_regression()
+
+    numCol = 100
+    numRow = 100
+    
+    for i in range(10):
+        board = generateRandomBoard.getBoard(numCol, numRow)
+        totalNodeCost = [0] * 8
+        totalScore = [0] * 8
+        aStarData = pathPlanner.plan_path(board, 5)
+        totalNodeCost[5] += aStarData[1]
+        totalScore[5] += aStarData[2]
+        print("Heuristic #", 5, ": ", "Total Nodes Expanded: ", totalNodeCost[5],
+              " Score: ",
+              totalScore[5])
+        write_to_csv(aStarData,board)
+
+        aStarData = pathPlanner.plan_path(board, 6)
+        totalNodeCost[6] += aStarData[1]
+        totalScore[6] += aStarData[2]
+        print("Heuristic #", 6, ": ", "Total Nodes Expanded: ", totalNodeCost[6],
+              " Score: ",
+              totalScore[6])
+        write_to_csv(aStarData, board)
+
+        aStarData = pathPlanner.plan_path(board, 7)
+        totalNodeCost[7] += aStarData[1]
+        totalScore[7] += aStarData[2]
+        print("Heuristic #", 7, ": ", "Total Nodes Expanded: ", totalNodeCost[7],
+              " Score: ",
+              totalScore[7])
+        write_to_csv(aStarData, board)
+
+
+
 
     # for x in range(iterations):
     #     board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
