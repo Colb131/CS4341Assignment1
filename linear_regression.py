@@ -2,8 +2,6 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from _csv import reader
 
-
-
 """
 code taken from https://realpython.com/linear-regression-in-python/
 """
@@ -17,7 +15,7 @@ code taken from https://realpython.com/linear-regression-in-python/
 
 # TODO export values to the learned_values file
 def perform_regression():
-    read_obj = open("results2.csv", 'r')
+    read_obj = open("results.csv", 'r')
     csv_reader = reader(read_obj)
     header = next(csv_reader)
     if header is not None:
@@ -29,8 +27,8 @@ def perform_regression():
             for i in row:
                 independents.append(float(i))
         independents = np.array(independents).reshape(-1, 3)
-        print(independents)
-        print(dependents)
+        # print(independents)
+        # print(dependents)
 
         model = LinearRegression().fit(independents, dependents)
         print(f"R^2:{model.score(independents, dependents)}")
@@ -47,6 +45,9 @@ def perform_regression():
 if __name__ == '__main__':
     perform_regression()
     # resets the csv to only have the header
-    # f = open("results2.csv", 'w')
-    # f.write("heading, x-dist, y-dist, cost-to-goal\n")
-    # f.close()
+    f = open("results.csv", 'w')
+    f.write("heading, x-dist, y-dist, cost-to-goal\n")
+    f.close()
+
+    f = open("learned_values.txt", 'w')
+    f.close()

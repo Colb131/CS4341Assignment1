@@ -6,6 +6,8 @@ import csv
 import numpy as np
 import sys
 
+from linear_regression import perform_regression
+
 aStarData = [None] * 4
 
 fields = ["Facing Direction", "x Distance", "Y Distance", "Cost"]
@@ -139,7 +141,8 @@ if __name__ == '__main__':
             # print(psutil.virtual_memory()[2])
             # print(process.memory_info().rss / (1024 * 1024), "MB")
             write_to_csv(aStarData, board)
+        perform_regression()
         # Print our results
         print("Heuristic #", heuristic, ": ", "Total Nodes Expanded: ", totalNodeCost[heuristic],
               " Score: ",
-              totalScore[heuristic])
+              100 - totalScore[heuristic])
