@@ -1,9 +1,7 @@
-import pathPlanner
-import generateRandomBoard
-import csv
 import numpy as np
 
-from linear_regression import perform_regression
+import generateRandomBoard
+import pathPlanner
 from main import write_to_csv
 
 aStarData = [None] * 4
@@ -33,7 +31,7 @@ def reader():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    iterations = 7
+    iterations = 3
     numCol = 100
     numRow = 100
 
@@ -43,7 +41,7 @@ if __name__ == '__main__':
         for x in range(iterations):
             if x != 5:
                 board = generateRandomBoard.getBoard(numCol, numRow)  # Generating a random game board
-                aStarData = pathPlanner.plan_path(board, x + 1)
+                aStarData = pathPlanner.plan_path(board, x + 5)
 
                 path = aStarData[0]
                 totalNodeCost[x + 1] += aStarData[1]
@@ -63,4 +61,4 @@ if __name__ == '__main__':
                       totalScore[x + 1])
 
                 write_to_csv(aStarData, board)
-                perform_regression()
+                

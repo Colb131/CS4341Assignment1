@@ -54,24 +54,24 @@ def getDirection(moveType, currentDirection):
     elif moveType == "Forward":
         pass
     elif moveType == "Right":
-        if currentDirection == 1:
-            direction = 2
-        elif currentDirection == 2:
+        if currentDirection == 2:
             direction = 3
-        elif currentDirection == 0:
-            direction = 1
         elif currentDirection == 3:
-            direction = 0
+            direction = 4
+        elif currentDirection == 1:
+            direction = 2
+        elif currentDirection == 4:
+            direction = 1
 
     elif moveType == "Left":
-        if currentDirection == 1:
-            direction = 0
+        if currentDirection == 2:
+            direction = 1
+        elif currentDirection == 4:
+            direction = 3
         elif currentDirection == 3:
             direction = 2
-        elif currentDirection == 2:
-            direction = 1
-        elif currentDirection == 0:
-            direction = 3
+        elif currentDirection == 1:
+            direction = 4
     return direction
 
 

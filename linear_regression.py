@@ -21,8 +21,8 @@ def perform_regression():
             for i in row:
                 independents.append(float(i))
         independents = np.array(independents).reshape(-1, 3)
-        print(independents)
-        print(dependents)
+       # print(independents)
+       # print(dependents)
 
         model = LinearRegression().fit(independents, dependents)
         print(f"R^2:{model.score(independents, dependents)}")
