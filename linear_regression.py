@@ -47,6 +47,6 @@ def perform_regression():
 if __name__ == '__main__':
     perform_regression()
     # resets the csv to only have the header
-    f = open("results2.csv", 'w')
-    f.write("heading, x-dist, y-dist, cost-to-goal\n")
-    f.close()
+    # f = open("results2.csv", 'w')
+    # f.write("heading, x-dist, y-dist, cost-to-goal\n")
+    # f.close()

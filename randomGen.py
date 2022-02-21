@@ -1,5 +1,4 @@
 import math
-from statistics import linear_regression
 from time import time
 import pandas as pd
 import main
@@ -174,40 +173,49 @@ if __name__ == '__main__':
     #
     # write_to_csv(aStarData, board).run(5)
 
-    run(20)
+    run(2)
     perform_regression()
 
     numCol = 100
     numRow = 100
-    
+
+    nodes5 = []
+    nodes6 = []
+    nodes7 = []
+
+    score5 = []
+    score6 = []
+    score7 = []
+
     for i in range(10):
+        print("Round ", i)
         board = generateRandomBoard.getBoard(numCol, numRow)
         totalNodeCost = [0] * 8
         totalScore = [0] * 8
         aStarData = pathPlanner.plan_path(board, 5)
         totalNodeCost[5] += aStarData[1]
         totalScore[5] += aStarData[2]
-        print("Heuristic #", 5, ": ", "Total Nodes Expanded: ", totalNodeCost[5],
-              " Score: ",
-              totalScore[5])
-        write_to_csv(aStarData,board)
+        nodes5.append(totalNodeCost[5])
+        score5.append(100 - totalScore[5])
+        write_to_csv(aStarData, board)
 
         aStarData = pathPlanner.plan_path(board, 6)
         totalNodeCost[6] += aStarData[1]
         totalScore[6] += aStarData[2]
-        print("Heuristic #", 6, ": ", "Total Nodes Expanded: ", totalNodeCost[6],
-              " Score: ",
-              totalScore[6])
+        nodes6.append(totalNodeCost[6])
+        score6.append(100 - totalScore[6])
         write_to_csv(aStarData, board)
 
         aStarData = pathPlanner.plan_path(board, 7)
         totalNodeCost[7] += aStarData[1]
         totalScore[7] += aStarData[2]
-        print("Heuristic #", 7, ": ", "Total Nodes Expanded: ", totalNodeCost[7],
-              " Score: ",
-              totalScore[7])
+        nodes7.append(totalNodeCost[7])
+        score7.append(100 - totalScore[7])
         write_to_csv(aStarData, board)
 
+    print("Heuristic 5: Avg Nodes: " , np.mean(nodes5) , "Avg Score: " , np.mean(score5))
+    print("Heuristic 6: Avg Nodes: " , np.mean(nodes6) , "Avg Score: " , np.mean(score6))
+    print("Heuristic 7: Avg Nodes: " , np.mean(nodes7) , "Avg Score: " , np.mean(score7))
 
 
 
