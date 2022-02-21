@@ -59,31 +59,31 @@ def getCost(current, next, board, moveType, totalCost):
     return cost
 
 
-def getDirection(current, next, moveType, currentDirection):
+def getDirection(moveType, currentDirection):
     direction = currentDirection
     if moveType == "Bash":
         pass
     elif moveType == "Forward":
         pass
     elif moveType == "Right":
-        if currentDirection == 1:
-            direction = -2
-        elif currentDirection == -1:
+        if currentDirection == 2:
+            direction = 3
+        elif currentDirection == 3:
+            direction = 4
+        elif currentDirection == 1:
             direction = 2
-        elif currentDirection == 2:
+        elif currentDirection == 4:
             direction = 1
-        elif currentDirection == -2:
-            direction = -1
 
     elif moveType == "Left":
-        if currentDirection == 1:
-            direction = 2
-        elif currentDirection == -1:
-            direction = -2
-        elif currentDirection == 2:
-            direction = -1
-        elif currentDirection == -2:
+        if currentDirection == 2:
             direction = 1
+        elif currentDirection == 4:
+            direction = 3
+        elif currentDirection == 3:
+            direction = 2
+        elif currentDirection == 1:
+            direction = 4
     return direction
 
 
@@ -108,7 +108,7 @@ def write_to_csv(journey_storage_object, gameboard):
     print(len(path), len(journey_storage_object[4]))
     print(path)
     print("Cost", orginalCost, "xdist, ydist", xd, yd, "Direction", 1)
-    orginalDirection = 1
+
     rows.append([1, xd, yd, orginalCost])
     for i in range(1, len(journey_storage_object[3])):
         xdist = abs(goal_point[0] - path[i+1][0])
@@ -117,8 +117,8 @@ def write_to_csv(journey_storage_object, gameboard):
 
         cost = orginalCost - journey_storage_object[4][i]
         orginalCost = cost
-        direction = getDirection(path[i-1], path[i], journey_storage_object[3][i], orginalDirection)
-        orginalDirection = direction
+        direction = getDirection(journey_storage_object[3][i], path[i-1])
+
         print("Cost", cost, "xdist, ydist", xdist, ydist, "Direction", direction)
         rows.append([direction, xdist, ydist, cost])
        # rows.append()
@@ -139,22 +139,9 @@ def run(runTime):
         '''
         global rows
         t = time()
-        i = 0
+        numCol = 100
+        numRow = 100
         while ((time() - t) < runTime):
-            numCol = 100
-            numRow = 100
-
-
-
-    totalNodeCost = [0] * 8
-    totalScore = [0] * 8
-    for _ in range(40):
-        for x in range(iterations):
-            if x != 5:
-                board = generateRandomBoard.getBoard(numCol, numRow)  # Generating a random game board
-                aStarData = pathPlanner.plan_path(board, x + 5)
-            totalNodeCost = [0] * 7
-            totalScore = [0] * 7
 
             board = generateRandomBoard.getBoard(numCol, numRow)  # Generating a random game board
             aStarData = pathPlanner.plan_path(board, 5)
@@ -164,15 +151,6 @@ def run(runTime):
             if( len(aStarData[0]) == len(aStarData[4])):
                 write_to_csv(aStarData, board)
 
-                path = aStarData[0]
-                totalNodeCost[x + 1] += aStarData[1]
-                totalScore[x + 1] += aStarData[2]
-                movesTaken = aStarData[3]
-
-                # print("error in iteration ", x)
-                print("\nHeuristic %d" % (x + 1))
-                print("Path taken: ", path)
-                print("Total Moves made: ", movesTaken)
         rows = pd.DataFrame(rows, columns=fields)
         rows.to_csv('results2.csv', index=False)
 
@@ -193,7 +171,7 @@ if __name__ == '__main__':
     #
     # write_to_csv(aStarData, board).run(5)
 
-    run(600)
+    run(2)
 
     # for x in range(iterations):
     #     board = generateRandomBoard.getBoard(numCol, numRow) # Generating a random game board
@@ -220,7 +198,4 @@ if __name__ == '__main__':
                 # print(psutil.virtual_memory()[2])
                 # print(process.memory_info().rss / (1024 * 1024), "MB")
                 # Print our results
-                print("Heuristic #", x + 1, ": ", "Total Nodes Expanded: ", totalNodeCost[x + 1], " Score: ",
-                      totalScore[x + 1])
 
-                write_to_csv(aStarData, board)
