@@ -89,7 +89,7 @@ def write_to_csv(journey_storage_object, board_object):
     path = journey_storage_object[0]
     goal_point = journey_storage_object[0][-1]
     # TODO write x dist = 0 y dist = 0 cost = final_cost
-    direction = 0
+    direction = 1
     total_cost_minus = 100 - journey_storage_object[2]
     for i in range(0, len(path) - 1):
         xdist = abs(goal_point[0] - path[i][0])
