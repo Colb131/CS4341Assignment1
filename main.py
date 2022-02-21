@@ -8,10 +8,6 @@ import sys
 
 aStarData = [None] * 4
 
-fields = ["Facing Direction", "x Distance", "Y Distance", "Cost"]
-rows = [[]]
-
-filename = "results.csv"
 
 def reader(filename):
     data = np.loadtxt(filename, delimiter="\t", dtype=str)
@@ -127,7 +123,7 @@ if __name__ == '__main__':
             # process = psutil.Process(os.getpid())
             # print(psutil.virtual_memory()[2])
             # print(process.memory_info().rss / (1024 * 1024), "MB")
-            write_to_csv(aStarData, filename)
+            #write_to_csv(aStarData, filename)
         # Print our results
         print("Heuristic #", heuristic, ": ", "Total Nodes Expanded: ", totalNodeCost[heuristic],
               " Score: ",

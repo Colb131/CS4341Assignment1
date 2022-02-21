@@ -10,7 +10,7 @@ import numpy as np
 
 
 
-aStarData = [None] * 4
+aStarData = [None] * 5
 
 
 def grid_to_index(mapdata, x, y):
@@ -107,6 +107,7 @@ def cleanup(path, mapdata):
     pathMoves = []
     prev_heading = 1
     final_score = 0
+    listScore = [0]
     data_curr = 0
     data_next = 0
     # For all nodes in the path, from the start to the finish,
@@ -121,10 +122,12 @@ def cleanup(path, mapdata):
         if data_curr < 10:
             # Add the cost of the current cell
             final_score += mapdata[curr_pos[1]][curr_pos[0]]
+            listScore.append(mapdata[curr_pos[1]][curr_pos[0]])
         else:  # S and G have a complexity of 1
             data_curr = 1
             if i > 0:
                 final_score += data_curr
+                listScore.append(data_curr)
 
         # Turning, both adding the cost of the turn and adding the actions
         if next_pos[1] - curr_pos[1] != 0:
@@ -144,11 +147,13 @@ def cleanup(path, mapdata):
             turn = -1
         if turn == 1:
             final_score += math.ceil(float(data_curr / 2))
+            listScore.append(math.ceil(float(data_curr / 2)))
             pathMoves.append("Right")
             holderpos = (curr_pos[0], curr_pos[1])
             finalPath.append(holderpos)
         if turn == 2 or turn == -2:  # Whenever there is a 180 turn, which shouldn't happen unless its the start, then it turns 180
             final_score += math.ceil(float(data_curr / 2)) * 2
+            listScore.append(math.ceil(float(data_curr / 2)) * 2)
             pathMoves.append("Right")
             pathMoves.append("Right")
             holderpos = (curr_pos[0], curr_pos[1])
@@ -156,12 +161,14 @@ def cleanup(path, mapdata):
             finalPath.append(holderpos)
         if turn == -1:
             final_score += math.ceil(float(data_curr / 2))
+            listScore.append(math.ceil(float(data_curr / 2)))
             pathMoves.append("Left")
             holderpos = (curr_pos[0], curr_pos[1])
             finalPath.append(holderpos)
         if abs(next_pos[0] - curr_pos[0]) >= 2:
             pathMoves.append("Bash")
             final_score += 3
+            listScore.append(3)
             holderpos = (
             int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]), int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
             finalPath.append(holderpos)
@@ -170,6 +177,7 @@ def cleanup(path, mapdata):
             if abs(next_pos[1] - curr_pos[1]) >= 2:
                 pathMoves.append("Bash")
                 final_score += 3
+                listScore.append(3)
                 holderpos = (
                 int((next_pos[0] - curr_pos[0]) / 2 + curr_pos[0]), int((next_pos[1] - curr_pos[1]) / 2 + curr_pos[1]))
                 finalPath.append(holderpos)
@@ -177,8 +185,9 @@ def cleanup(path, mapdata):
             else:
                 pathMoves.append("Forward")
     final_score += 1
+    listScore.append(1)
     finalPath.append(path[len(path) - 1])
-    return (finalPath, pathMoves, 100 - final_score)
+    return (finalPath, pathMoves, final_score, listScore)
 
 
 def a_star(mapdata, start, goal, heuristicOption):
@@ -390,10 +399,12 @@ def plan_path(mapdata, heuristicOption):
     print("Goal : %s, %s" % (goal[0], goal[1]))
     path = a_star(mapdata, start, goal, heuristicOption)
     finalPath = cleanup(path, mapdata)
+    print(finalPath)
 
     aStarData[0] = finalPath[0]  # Path taken
     aStarData[3] = finalPath[1]  # Actions Taken
     aStarData[2] = finalPath[2]  # Total Score
+    aStarData[4] = finalPath[3]
 
     ## Return a Path message
     return aStarData
